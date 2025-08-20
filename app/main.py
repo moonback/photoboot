@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 from .config import config_manager
-from .routes import health, config_api, auth
+from .routes import health, config_api, auth, admin, upload
 from .admin.auth import admin_auth
 
 
@@ -109,6 +109,8 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.include_router(health.router)
 app.include_router(config_api.router)
 app.include_router(auth.router)
+app.include_router(admin.router)
+app.include_router(upload.router)
 
 
 # Route racine - page d'accueil
@@ -281,6 +283,44 @@ async def status():
             "error": str(e),
             "timestamp": time.time()
         }
+
+
+# Route pour servir les photos uploadées
+@app.get("/uploads/{filename}")
+async def serve_uploaded_file(filename: str):
+    """Sert les fichiers uploadés (photos)"""
+    try:
+        file_path = Path("uploads") / filename
+        
+        # Vérifier que le fichier existe et est dans le dossier uploads
+        if not file_path.exists() or not file_path.is_file():
+            raise HTTPException(status_code=404, detail="Fichier non trouvé")
+        
+        # Vérifier que le fichier est bien dans le dossier uploads (sécurité)
+        if not str(file_path.resolve()).startswith(str(Path("uploads").resolve())):
+            raise HTTPException(status_code=400, detail="Chemin de fichier invalide")
+        
+        # Déterminer le type MIME
+        content_type = "image/jpeg"  # Par défaut
+        if filename.lower().endswith('.png'):
+            content_type = "image/png"
+        elif filename.lower().endswith('.gif'):
+            content_type = "image/gif"
+        elif filename.lower().endswith('.bmp'):
+            content_type = "image/bmp"
+        
+        # Retourner le fichier
+        return FileResponse(
+            file_path,
+            media_type=content_type,
+            filename=filename
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erreur lors de la lecture du fichier {filename}: {e}")
+        raise HTTPException(status_code=500, detail="Erreur lors de la lecture du fichier")
 
 
 if __name__ == "__main__":
