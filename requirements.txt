@@ -1,0 +1,16 @@
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+loguru>=0.7.2
+jinja2>=3.1.2
+qrcode[pil]>=7.4.2
+itsdangerous>=2.1.2
+pillow>=10.1.0
+numpy>=1.24.0
+opencv-python>=4.8.0
+aiosmtplib>=2.0.2
+pywin32>=306; sys_platform == "win32"
+python-multipart>=0.0.6
+bcrypt>=4.1.0

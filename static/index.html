@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photobooth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-black text-white overflow-hidden">
+    <!-- Interface principale -->
+    <div id="main-interface" class="h-screen flex flex-col items-center justify-center">
+        <!-- Logo et titre -->
+        <div class="text-center mb-12">
+            <h1 class="text-6xl font-bold text-transparent bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text mb-4">
+                📸 Photobooth
+            </h1>
+            <p class="text-xl text-gray-300">Prêt à capturer vos moments !</p>
+        </div>
+
+        <!-- Bouton principal -->
+        <div class="mb-8">
+            <button id="start-button" class="start-btn">
+                <span class="btn-text">DÉMARRER</span>
+                <div class="btn-glow"></div>
+            </button>
+        </div>
+
+        <!-- Informations système -->
+        <div class="text-center text-gray-400 text-sm">
+            <p id="status-text">Système prêt</p>
+            <p id="version-text" class="mt-1">Version 1.0.0</p>
+        </div>
+
+        <!-- Indicateurs -->
+        <div class="fixed top-4 right-4 flex space-x-2">
+            <div id="camera-status" class="status-indicator bg-red-500">
+                <span class="status-text">Caméra</span>
+            </div>
+            <div id="storage-status" class="status-indicator bg-green-500">
+                <span class="status-text">Stockage</span>
+            </div>
+        </div>
+
+        <!-- Bouton admin (coin bas gauche) -->
+        <div class="fixed bottom-4 left-4">
+            <button id="admin-button" class="admin-btn">
+                ⚙️ Admin
+            </button>
+        </div>
+
+        <!-- Compteur de photos -->
+        <div class="fixed bottom-4 right-4 text-right">
+            <div class="text-2xl font-bold text-blue-400" id="photo-count">0</div>
+            <div class="text-sm text-gray-400">Photos prises</div>
+        </div>
+    </div>
+
+    <!-- Interface de capture (cachée par défaut) -->
+    <div id="capture-interface" class="h-screen hidden flex flex-col items-center justify-center">
+        <div class="text-center mb-8">
+            <h2 class="text-4xl font-bold text-blue-400 mb-2">Préparez-vous !</h2>
+            <p class="text-xl text-gray-300">La photo sera prise dans</p>
+        </div>
+
+        <!-- Compteur dégressif -->
+        <div class="countdown-display mb-8">
+            <span id="countdown-number" class="countdown-number">3</span>
+        </div>
+
+        <!-- Aperçu caméra -->
+        <div class="camera-preview mb-8">
+            <video id="camera-video" autoplay muted class="camera-video"></video>
+            <canvas id="capture-canvas" class="hidden"></canvas>
+        </div>
+
+        <!-- Boutons de contrôle -->
+        <div class="flex space-x-4">
+            <button id="cancel-capture" class="control-btn bg-red-600 hover:bg-red-700">
+                ❌ Annuler
+            </button>
+            <button id="retake-photo" class="control-btn bg-yellow-600 hover:bg-yellow-700 hidden">
+                🔄 Reprendre
+            </button>
+        </div>
+    </div>
+
+    <!-- Interface de résultat (cachée par défaut) -->
+    <div id="result-interface" class="h-screen hidden flex flex-col items-center justify-center">
+        <div class="text-center mb-8">
+            <h2 class="text-4xl font-bold text-green-400 mb-2">Photo prise !</h2>
+            <p class="text-xl text-gray-300">Votre photo est prête</p>
+        </div>
+
+        <!-- Aperçu de la photo -->
+        <div class="photo-result mb-8">
+            <img id="result-image" class="result-image" alt="Photo prise">
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="flex space-x-4">
+            <button id="new-photo" class="control-btn bg-blue-600 hover:bg-blue-700">
+                📸 Nouvelle photo
+            </button>
+            <button id="download-photo" class="control-btn bg-green-600 hover:bg-green-700">
+                💾 Télécharger
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal admin -->
+    <div id="admin-modal" class="admin-modal hidden">
+        <div class="admin-modal-content">
+            <div class="admin-modal-header">
+                <h3 class="text-xl font-bold">Administration</h3>
+                <button id="close-admin" class="close-btn">&times;</button>
+            </div>
+            <div class="admin-modal-body">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Nom d'utilisateur</label>
+                    <input type="text" id="admin-username" class="admin-input" placeholder="admin">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Mot de passe</label>
+                    <input type="password" id="admin-password" class="admin-input" placeholder="••••••••">
+                </div>
+                <button id="admin-login" class="admin-login-btn">Se connecter</button>
+                <div id="admin-status" class="admin-status hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

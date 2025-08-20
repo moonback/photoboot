@@ -1,0 +1,1 @@
+# Application Photobooth - Module principal
