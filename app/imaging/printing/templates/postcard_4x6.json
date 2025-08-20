@@ -1,0 +1,38 @@
+{
+  "name": "Postcard 4x6",
+  "description": "Carte postale 4x6 pouces",
+  "dimensions": {
+    "width_mm": 101.6,
+    "height_mm": 152.4,
+    "dpi": 300
+  },
+  "layout": {
+    "type": "single",
+    "columns": 1,
+    "rows": 1
+  },
+  "margins": {
+    "top_mm": 5.0,
+    "bottom_mm": 5.0,
+    "left_mm": 5.0,
+    "right_mm": 5.0
+  },
+  "photo_settings": {
+    "aspect_ratio": "3:4",
+    "border_mm": 2.0,
+    "corner_radius_mm": 3.0
+  },
+  "text_overlay": {
+    "enabled": true,
+    "position": "bottom",
+    "font_size_pt": 14,
+    "font_color": "#000000",
+    "background_color": "#FFFFFF",
+    "padding_mm": 2.0
+  },
+  "frame_settings": {
+    "enabled": true,
+    "default_frame": "default.png",
+    "opacity": 0.8
+  }
+}

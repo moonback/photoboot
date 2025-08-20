@@ -1,0 +1,34 @@
+{
+  "name": "Strip 2x6",
+  "description": "Bande de photos 2x6 pouces",
+  "dimensions": {
+    "width_mm": 152.4,
+    "height_mm": 50.8,
+    "dpi": 300
+  },
+  "layout": {
+    "type": "grid",
+    "columns": 2,
+    "rows": 1,
+    "spacing_mm": 2.0
+  },
+  "margins": {
+    "top_mm": 3.0,
+    "bottom_mm": 3.0,
+    "left_mm": 3.0,
+    "right_mm": 3.0
+  },
+  "photo_settings": {
+    "aspect_ratio": "4:3",
+    "border_mm": 1.0,
+    "corner_radius_mm": 2.0
+  },
+  "text_overlay": {
+    "enabled": true,
+    "position": "bottom",
+    "font_size_pt": 12,
+    "font_color": "#000000",
+    "background_color": "#FFFFFF",
+    "padding_mm": 1.0
+  }
+}

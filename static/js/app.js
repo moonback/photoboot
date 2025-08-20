@@ -1,113 +1,127 @@
-// Application JavaScript pour le photobooth
+/**
+ * Application JavaScript principale du photobooth
+ * Gère l'interface utilisateur et les interactions
+ */
 
 class PhotoboothApp {
     constructor() {
-        this.currentInterface = 'main';
+        this.currentMode = 'single'; // 'single' ou 'multi'
+        this.currentFilter = 'none';
+        this.currentTemplate = 'strip_2x6';
+        this.capturedPhotos = [];
         this.photoCount = 0;
         this.isCapturing = false;
-        this.countdownInterval = null;
         this.stream = null;
-        this.video = null;
-        this.canvas = null;
-        this.capturedImage = null;
-        
+        this.countdownInterval = null;
+
         this.init();
     }
-    
+
     init() {
         this.bindEvents();
         this.updateStatus();
-        this.checkSystemHealth();
-        
-        // Mettre à jour le compteur de photos
-        this.updatePhotoCount();
-        
-        console.log('Photobooth initialisé');
+        this.loadPhotoCount();
     }
-    
+
     bindEvents() {
-        // Bouton de démarrage principal
-        const startButton = document.getElementById('start-button');
-        if (startButton) {
-            startButton.addEventListener('click', () => this.startCapture());
-        }
-        
+        // Boutons de mode de capture
+        document.getElementById('single-mode').addEventListener('click', () => this.setMode('single'));
+        document.getElementById('multi-mode').addEventListener('click', () => this.setMode('multi'));
+
+        // Boutons de filtre
+        document.getElementById('filter-none').addEventListener('click', () => this.setFilter('none'));
+        document.getElementById('filter-vintage').addEventListener('click', () => this.setFilter('vintage'));
+        document.getElementById('filter-bw').addEventListener('click', () => this.setFilter('bw'));
+        document.getElementById('filter-warm').addEventListener('click', () => this.setFilter('warm'));
+
+        // Boutons de template
+        document.getElementById('template-strip').addEventListener('click', () => this.setTemplate('strip_2x6'));
+        document.getElementById('template-postcard').addEventListener('click', () => this.setTemplate('postcard_4x6'));
+
+        // Bouton principal
+        document.getElementById('start-button').addEventListener('click', () => this.startCapture());
+
+        // Boutons de contrôle
+        document.getElementById('cancel-capture').addEventListener('click', () => this.cancelCapture());
+        document.getElementById('retake-photos').addEventListener('click', () => this.retakePhotos());
+        document.getElementById('validate-photos').addEventListener('click', () => this.validatePhotos());
+        document.getElementById('back-to-results').addEventListener('click', () => this.showResults());
+        document.getElementById('generate-print').addEventListener('click', () => this.generatePrint());
+
         // Bouton admin
-        const adminButton = document.getElementById('admin-button');
-        if (adminButton) {
-            adminButton.addEventListener('click', () => this.showAdminModal());
-        }
-        
-        // Boutons de l'interface de capture
-        const cancelButton = document.getElementById('cancel-capture');
-        if (cancelButton) {
-            cancelButton.addEventListener('click', () => this.cancelCapture());
-        }
-        
-        const retakeButton = document.getElementById('retake-photo');
-        if (retakeButton) {
-            retakeButton.addEventListener('click', () => this.retakePhoto());
-        }
-        
-        // Boutons de l'interface de résultat
-        const newPhotoButton = document.getElementById('new-photo');
-        if (newPhotoButton) {
-            newPhotoButton.addEventListener('click', () => this.newPhoto());
-        }
-        
-        const downloadButton = document.getElementById('download-photo');
-        if (downloadButton) {
-            downloadButton.addEventListener('click', () => this.downloadPhoto());
-        }
-        
-        // Modal admin
-        const closeAdminButton = document.getElementById('close-admin');
-        if (closeAdminButton) {
-            closeAdminButton.addEventListener('click', () => this.hideAdminModal());
-        }
-        
-        const adminLoginButton = document.getElementById('admin-login');
-        if (adminLoginButton) {
-            adminLoginButton.addEventListener('click', () => this.adminLogin());
-        }
-        
-        // Fermer la modal en cliquant à l'extérieur
-        const adminModal = document.getElementById('admin-modal');
-        if (adminModal) {
-            adminModal.addEventListener('click', (e) => {
-                if (e.target === adminModal) {
-                    this.hideAdminModal();
-                }
-            });
-        }
-        
+        document.getElementById('admin-button').addEventListener('click', () => this.showAdminModal());
+        document.getElementById('close-admin').addEventListener('click', () => this.hideAdminModal());
+        document.getElementById('admin-login').addEventListener('click', () => this.adminLogin());
+
         // Gestion des touches clavier
         document.addEventListener('keydown', (e) => this.handleKeyPress(e));
     }
-    
-    async startCapture() {
-        if (this.isCapturing) return;
-        
-        try {
-            this.isCapturing = true;
-            this.updateStatus('Préparation de la caméra...');
-            
-            // Démarrer la caméra
-            await this.startCamera();
-            
-            // Basculer vers l'interface de capture
-            this.showInterface('capture');
-            
-            // Démarrer le compte à rebours
-            this.startCountdown();
-            
-        } catch (error) {
-            console.error('Erreur lors du démarrage de la capture:', error);
-            this.updateStatus('Erreur: Impossible d\'accéder à la caméra');
-            this.isCapturing = false;
+
+    setMode(mode) {
+        this.currentMode = mode;
+
+        // Mettre à jour l'interface
+        document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`${mode}-mode`).classList.add('active');
+
+        // Mettre à jour le texte du bouton principal
+        const startBtn = document.getElementById('start-button');
+        if (mode === 'multi') {
+            startBtn.querySelector('.btn-text').textContent = 'CAPTURER 4 PHOTOS';
+        } else {
+            startBtn.querySelector('.btn-text').textContent = 'DÉMARRER';
         }
     }
-    
+
+    setFilter(filter) {
+        this.currentFilter = filter;
+
+        // Mettre à jour l'interface
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`filter-${filter}`).classList.add('active');
+    }
+
+    setTemplate(template) {
+        this.currentTemplate = template;
+
+        // Mettre à jour l'interface
+        document.querySelectorAll('.template-btn').forEach(btn => btn.classList.remove('active'));
+
+        // Mapper les templates aux IDs des boutons
+        let buttonId;
+        if (template === 'strip_2x6') {
+            buttonId = 'template-strip';
+        } else if (template === 'postcard_4x6') {
+            buttonId = 'template-postcard';
+        } else {
+            buttonId = `template-${template.replace('_', '-')}`;
+        }
+
+        const button = document.getElementById(buttonId);
+        if (button) {
+            button.classList.add('active');
+        }
+    }
+
+    async startCapture() {
+        if (this.isCapturing) return;
+
+        try {
+            // Démarrer la caméra
+            await this.startCamera();
+
+            // Afficher l'interface de capture
+            this.showInterface('capture');
+
+            // Démarrer le compte à rebours
+            this.startCountdown();
+
+        } catch (error) {
+            console.error('Erreur lors du démarrage de la capture:', error);
+            this.showError('Impossible de démarrer la caméra');
+        }
+    }
+
     async startCamera() {
         try {
             this.stream = await navigator.mediaDevices.getUserMedia({
@@ -115,378 +129,409 @@ class PhotoboothApp {
                     width: { ideal: 1280 },
                     height: { ideal: 720 },
                     facingMode: 'user'
-                },
-                audio: false
+                }
             });
-            
-            this.video = document.getElementById('camera-video');
-            if (this.video) {
-                this.video.srcObject = this.stream;
-                this.video.play();
-            }
-            
+
+            const video = document.getElementById('camera-video');
+            video.srcObject = this.stream;
+
             // Mettre à jour le statut de la caméra
-            this.updateCameraStatus(true);
-            
+            document.getElementById('camera-status').className = 'status-indicator bg-green-500';
+            document.getElementById('camera-status').querySelector('.status-text').textContent = 'Caméra';
+
         } catch (error) {
-            console.error('Erreur lors de l\'accès à la caméra:', error);
-            throw error;
+            throw new Error('Accès à la caméra refusé');
         }
     }
-    
+
     startCountdown() {
         let count = 3;
         const countdownElement = document.getElementById('countdown-number');
-        
-        if (countdownElement) {
-            countdownElement.textContent = count;
+        const multiProgress = document.getElementById('multi-progress');
+
+        // Afficher/masquer la progression selon le mode
+        if (this.currentMode === 'multi') {
+            multiProgress.classList.remove('hidden');
+            this.updateMultiProgress(1, this.currentMode === 'multi' ? 4 : 1);
+        } else {
+            multiProgress.classList.add('hidden');
         }
-        
+
+        countdownElement.textContent = count;
+
         this.countdownInterval = setInterval(() => {
             count--;
-            
-            if (countdownElement) {
-                countdownElement.textContent = count;
-            }
-            
+            countdownElement.textContent = count;
+
             if (count <= 0) {
                 clearInterval(this.countdownInterval);
                 this.capturePhoto();
             }
         }, 1000);
     }
-    
+
     async capturePhoto() {
         try {
-            this.updateStatus('Capture en cours...');
-            
-            // Créer le canvas pour la capture
-            this.canvas = document.getElementById('capture-canvas');
-            if (!this.canvas) {
-                throw new Error('Canvas non trouvé');
-            }
-            
-            const ctx = this.canvas.getContext('2d');
-            this.canvas.width = this.video.videoWidth;
-            this.canvas.height = this.video.videoHeight;
-            
-            // Dessiner la vidéo sur le canvas
-            ctx.drawImage(this.video, 0, 0);
-            
+            const video = document.getElementById('camera-video');
+            const canvas = document.getElementById('capture-canvas');
+            const context = canvas.getContext('2d');
+
+            // Configurer le canvas
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Capturer la frame
+            context.drawImage(video, 0, 0);
+
+            // Appliquer le filtre
+            this.applyFilter(context, canvas.width, canvas.height);
+
             // Convertir en blob
-            this.canvas.toBlob((blob) => {
-                if (blob) {
-                    this.capturedImage = blob;
-                    this.processCapturedPhoto();
-                }
-            }, 'image/jpeg', 0.9);
-            
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+
+            // Créer l'URL de la photo
+            const photoUrl = URL.createObjectURL(blob);
+
+            // Ajouter à la liste des photos capturées
+            this.capturedPhotos.push({
+                url: photoUrl,
+                blob: blob,
+                timestamp: Date.now()
+            });
+
+            // Mettre à jour le compteur
+            this.photoCount++;
+            this.updatePhotoCount();
+
+            // Vérifier si on continue ou si on a fini
+            if (this.currentMode === 'multi' && this.capturedPhotos.length < 4) {
+                // Continuer avec la photo suivante
+                this.updateMultiProgress(this.capturedPhotos.length + 1, 4);
+                setTimeout(() => this.startCountdown(), 1000);
+            } else {
+                // Fin de la capture
+                this.stopCamera();
+                this.showResults();
+            }
+
         } catch (error) {
             console.error('Erreur lors de la capture:', error);
-            this.updateStatus('Erreur lors de la capture');
-            this.cancelCapture();
+            this.showError('Erreur lors de la capture');
         }
-    }
-    
-    async processCapturedPhoto() {
-        // Arrêter la caméra
-        this.stopCamera();
-        
-        // Incrémenter le compteur
-        this.photoCount++;
-        this.updatePhotoCount();
-        
-        // Afficher l'image capturée
-        const resultImage = document.getElementById('result-image');
-        if (resultImage && this.capturedImage) {
-            resultImage.src = URL.createObjectURL(this.capturedImage);
-        }
-        
-        // Sauvegarder la photo sur le serveur
-        await this.savePhotoToServer();
-        
-        // Basculer vers l'interface de résultat
-        this.showInterface('result');
-        
-        this.isCapturing = false;
-        this.updateStatus('Photo capturée et sauvegardée avec succès !');
     }
 
-    async savePhotoToServer() {
-        if (!this.capturedImage) {
-            console.error('Aucune image à sauvegarder');
-            return;
+    applyFilter(context, width, height) {
+        const imageData = context.getImageData(0, 0, width, height);
+        const data = imageData.data;
+
+        switch (this.currentFilter) {
+            case 'vintage':
+                // Filtre vintage (sépia)
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+
+                    data[i] = Math.min(255, (r * 0.393) + (g * 0.769) + (b * 0.189));
+                    data[i + 1] = Math.min(255, (r * 0.349) + (g * 0.686) + (b * 0.168));
+                    data[i + 2] = Math.min(255, (r * 0.272) + (g * 0.534) + (b * 0.131));
+                }
+                break;
+
+            case 'bw':
+                // Filtre noir et blanc
+                for (let i = 0; i < data.length; i += 4) {
+                    const gray = (data[i] * 0.299) + (data[i + 1] * 0.587) + (data[i + 2] * 0.114);
+                    data[i] = gray;
+                    data[i + 1] = gray;
+                    data[i + 2] = gray;
+                }
+                break;
+
+            case 'warm':
+                // Filtre chaud
+                for (let i = 0; i < data.length; i += 4) {
+                    data[i] = Math.min(255, data[i] * 1.1);     // Rouge augmenté
+                    data[i + 1] = Math.min(255, data[i + 1] * 1.05); // Vert légèrement augmenté
+                    data[i + 2] = Math.min(255, data[i + 2] * 0.9);  // Bleu diminué
+                }
+                break;
         }
 
-        try {
-            this.updateStatus('Sauvegarde de la photo...');
-            
-            // Créer un FormData avec l'image
-            const formData = new FormData();
-            formData.append('photo', this.capturedImage, `photobooth_${Date.now()}.jpg`);
-            
-            // Envoyer la photo au serveur
-            const response = await fetch('/upload/photo', {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Photo sauvegardée:', result);
-                this.updateStatus('Photo sauvegardée avec succès !');
-            } else {
-                console.error('Erreur lors de la sauvegarde:', response.status);
-                this.updateStatus('Erreur lors de la sauvegarde de la photo');
-            }
-            
-        } catch (error) {
-            console.error('Erreur lors de la sauvegarde de la photo:', error);
-            this.updateStatus('Erreur lors de la sauvegarde de la photo');
-        }
+        context.putImageData(imageData, 0, 0);
     }
-    
+
+    updateMultiProgress(current, total) {
+        document.getElementById('current-photo').textContent = current;
+        document.getElementById('total-photos').textContent = total;
+
+        const progress = (current / total) * 100;
+        document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
     stopCamera() {
         if (this.stream) {
             this.stream.getTracks().forEach(track => track.stop());
             this.stream = null;
         }
-        
-        if (this.video) {
-            this.video.srcObject = null;
-        }
-        
-        this.updateCameraStatus(false);
+
+        // Mettre à jour le statut de la caméra
+        document.getElementById('camera-status').className = 'status-indicator bg-red-500';
+        document.getElementById('camera-status').querySelector('.status-text').textContent = 'Caméra';
     }
-    
+
     cancelCapture() {
         if (this.countdownInterval) {
             clearInterval(this.countdownInterval);
         }
-        
+
         this.stopCamera();
+        this.capturedPhotos = [];
         this.showInterface('main');
-        this.isCapturing = false;
-        this.updateStatus('Capture annulée');
     }
-    
-    retakePhoto() {
+
+    showResults() {
+        this.showInterface('result');
+        this.displayCapturedPhotos();
+    }
+
+    displayCapturedPhotos() {
+        const grid = document.getElementById('photos-grid');
+        grid.innerHTML = '';
+
+        // Définir la classe CSS selon le nombre de photos
+        grid.className = `photos-grid ${this.currentMode}`;
+
+        this.capturedPhotos.forEach((photo, index) => {
+            const photoItem = document.createElement('div');
+            photoItem.className = 'photo-item fade-in-up';
+            photoItem.style.animationDelay = `${index * 0.1}s`;
+
+            photoItem.innerHTML = `
+                <img src="${photo.url}" alt="Photo ${index + 1}">
+                <div class="photo-number">${index + 1}</div>
+            `;
+
+            grid.appendChild(photoItem);
+        });
+    }
+
+    retakePhotos() {
+        this.capturedPhotos.forEach(photo => URL.revokeObjectURL(photo.url));
+        this.capturedPhotos = [];
         this.showInterface('main');
-        this.capturedImage = null;
     }
-    
-    newPhoto() {
-        this.showInterface('main');
-        this.capturedImage = null;
+
+    validatePhotos() {
+        this.showInterface('composition');
+        this.updateCompositionPreview();
     }
-    
-    downloadPhoto() {
-        if (this.capturedImage) {
-            const url = URL.createObjectURL(this.capturedImage);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `photobooth_${Date.now()}.jpg`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            this.updateStatus('Photo téléchargée');
+
+    updateCompositionPreview() {
+        const container = document.getElementById('preview-container');
+
+        if (this.capturedPhotos.length === 0) {
+            container.innerHTML = '<p class="text-gray-500">Aucune photo à afficher</p>';
+            return;
+        }
+
+        // Créer un aperçu simple de la composition
+        const preview = document.createElement('div');
+        preview.className = 'text-center';
+
+        const template = this.currentTemplate;
+        if (template === 'strip_2x6') {
+            preview.innerHTML = `
+                <div class="bg-gray-200 p-4 rounded-lg inline-block">
+                    <div class="flex space-x-2">
+                        ${this.capturedPhotos.slice(0, 2).map((_, i) =>
+                `<div class="w-16 h-12 bg-blue-300 rounded"></div>`
+            ).join('')}
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">Bande 2x6</p>
+                </div>
+            `;
+        } else {
+            preview.innerHTML = `
+                <div class="bg-gray-200 p-4 rounded-lg inline-block">
+                    <div class="w-24 h-32 bg-blue-300 rounded"></div>
+                    <p class="text-sm text-gray-600 mt-2">Carte 4x6</p>
+                </div>
+            `;
+        }
+
+        container.innerHTML = '';
+        container.appendChild(preview);
+    }
+
+    async generatePrint() {
+        try {
+            const customText = document.getElementById('custom-text').value.trim();
+
+            // Préparer les données pour l'API
+            const formData = new FormData();
+            formData.append('template', this.currentTemplate);
+            if (customText) {
+                formData.append('text_overlay', customText);
+            }
+
+            // Ajouter les photos
+            this.capturedPhotos.forEach((photo, index) => {
+                formData.append('photos', photo.blob, `photo_${index + 1}.jpg`);
+            });
+
+            // Envoyer à l'API de composition
+            const response = await fetch('/api/compose', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                this.showSuccess('Composition générée avec succès !');
+
+                // Télécharger le fichier final
+                setTimeout(() => {
+                    this.downloadFile(result.canvas_path, `photobooth_${this.currentTemplate}.png`);
+                }, 1000);
+
+            } else {
+                throw new Error('Erreur lors de la génération');
+            }
+
+        } catch (error) {
+            console.error('Erreur lors de la génération:', error);
+            this.showError('Erreur lors de la génération de la composition');
         }
     }
-    
+
+    downloadFile(url, filename) {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     showInterface(interfaceName) {
         // Masquer toutes les interfaces
-        const interfaces = ['main', 'capture', 'result'];
+        const interfaces = ['main', 'capture', 'result', 'composition'];
         interfaces.forEach(name => {
             const element = document.getElementById(`${name}-interface`);
             if (element) {
                 element.classList.add('hidden');
             }
         });
-        
+
         // Afficher l'interface demandée
         const targetInterface = document.getElementById(`${interfaceName}-interface`);
         if (targetInterface) {
             targetInterface.classList.remove('hidden');
-            targetInterface.classList.add('fade-in');
+            targetInterface.classList.add('fade-in-up');
         }
-        
-        this.currentInterface = interfaceName;
     }
-    
+
+    updatePhotoCount() {
+        document.getElementById('photo-count').textContent = this.photoCount;
+
+        // Sauvegarder dans le localStorage
+        localStorage.setItem('photobooth_photo_count', this.photoCount.toString());
+    }
+
+    loadPhotoCount() {
+        const saved = localStorage.getItem('photobooth_photo_count');
+        if (saved) {
+            this.photoCount = parseInt(saved);
+            this.updatePhotoCount();
+        }
+    }
+
+    updateStatus() {
+        // Vérifier le statut du stockage
+        const storageStatus = document.getElementById('storage-status');
+        if (navigator.storage && navigator.storage.estimate) {
+            navigator.storage.estimate().then(estimate => {
+                const usagePercent = (estimate.usage / estimate.quota) * 100;
+                if (usagePercent > 90) {
+                    storageStatus.className = 'status-indicator bg-red-500';
+                    storageStatus.querySelector('.status-text').textContent = 'Stockage plein';
+                } else if (usagePercent > 70) {
+                    storageStatus.className = 'status-indicator bg-yellow-500';
+                    storageStatus.querySelector('.status-text').textContent = 'Stockage limité';
+                }
+            });
+        }
+    }
+
     showAdminModal() {
-        const modal = document.getElementById('admin-modal');
-        if (modal) {
-            modal.classList.remove('hidden');
-        }
+        document.getElementById('admin-modal').classList.remove('hidden');
     }
-    
+
     hideAdminModal() {
-        const modal = document.getElementById('admin-modal');
-        if (modal) {
-            modal.classList.add('hidden');
-        }
-        
-        // Réinitialiser les champs
-        const usernameInput = document.getElementById('admin-username');
-        const passwordInput = document.getElementById('admin-password');
-        if (usernameInput) usernameInput.value = '';
-        if (passwordInput) passwordInput.value = '';
-        
-        // Masquer le statut
-        const statusElement = document.getElementById('admin-status');
-        if (statusElement) {
-            statusElement.classList.add('hidden');
-        }
+        document.getElementById('admin-modal').classList.add('hidden');
     }
-    
+
     async adminLogin() {
-        const username = document.getElementById('admin-username')?.value;
-        const password = document.getElementById('admin-password')?.value;
+        const username = document.getElementById('admin-username').value;
+        const password = document.getElementById('admin-password').value;
         const statusElement = document.getElementById('admin-status');
-        
-        if (!username || !password) {
-            this.showAdminStatus('Veuillez remplir tous les champs', 'error');
-            return;
-        }
-        
+
         try {
             const response = await fetch('/admin/login', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ username, password })
             });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                this.showAdminStatus('Connexion réussie ! Redirection...', 'success');
+
+            if (response.ok) {
+                statusElement.textContent = 'Connexion réussie !';
+                statusElement.className = 'admin-status success';
                 setTimeout(() => {
-                    this.hideAdminModal();
-                    // Rediriger vers la page d'administration
                     window.location.href = '/admin';
-                }, 1500);
+                }, 1000);
             } else {
-                this.showAdminStatus(result.message || 'Échec de la connexion', 'error');
+                throw new Error('Identifiants invalides');
             }
-            
+
         } catch (error) {
-            console.error('Erreur lors de la connexion admin:', error);
-            this.showAdminStatus('Erreur de connexion', 'error');
+            statusElement.textContent = 'Erreur de connexion';
+            statusElement.className = 'admin-status error';
         }
+
+        statusElement.classList.remove('hidden');
     }
-    
-    showAdminStatus(message, type) {
-        const statusElement = document.getElementById('admin-status');
-        if (statusElement) {
-            statusElement.textContent = message;
-            statusElement.className = `admin-status ${type}`;
-            statusElement.classList.remove('hidden');
-        }
-    }
-    
-    updateStatus(message) {
-        const statusElement = document.getElementById('status-text');
-        if (statusElement) {
-            statusElement.textContent = message;
-        }
-    }
-    
-    updatePhotoCount() {
-        const countElement = document.getElementById('photo-count');
-        if (countElement) {
-            countElement.textContent = this.photoCount;
-        }
-    }
-    
-    updateCameraStatus(isActive) {
-        const statusElement = document.getElementById('camera-status');
-        if (statusElement) {
-            if (isActive) {
-                statusElement.className = 'status-indicator bg-green-500';
-                statusElement.querySelector('.status-text').textContent = 'Caméra ON';
-            } else {
-                statusElement.className = 'status-indicator bg-red-500';
-                statusElement.querySelector('.status-text').textContent = 'Caméra';
-            }
-        }
-    }
-    
-    async checkSystemHealth() {
-        try {
-            const response = await fetch('/health');
-            const health = await response.json();
-            
-            if (health.status === 'healthy') {
-                this.updateStatus('Système opérationnel');
-                this.updateStorageStatus(true);
-            } else {
-                this.updateStatus('Problème système détecté');
-                this.updateStorageStatus(false);
-            }
-            
-        } catch (error) {
-            console.error('Erreur lors de la vérification de santé:', error);
-            this.updateStatus('Erreur de connexion au serveur');
-            this.updateStorageStatus(false);
-        }
-    }
-    
-    updateStorageStatus(isHealthy) {
-        const statusElement = document.getElementById('storage-status');
-        if (statusElement) {
-            if (isHealthy) {
-                statusElement.className = 'status-indicator bg-green-500';
-                statusElement.querySelector('.status-text').textContent = 'Stockage';
-            } else {
-                statusElement.className = 'status-indicator bg-red-500';
-                statusElement.querySelector('.status-text').textContent = 'Stockage';
-            }
-        }
-    }
-    
+
     handleKeyPress(event) {
         switch (event.key) {
             case 'Escape':
-                if (this.currentInterface === 'capture') {
+                if (this.isCapturing) {
                     this.cancelCapture();
-                } else if (this.currentInterface === 'result') {
-                    this.newPhoto();
                 }
                 break;
-                
-            case 'Enter':
-                if (this.currentInterface === 'main') {
+            case ' ':
+                if (!this.isCapturing) {
+                    event.preventDefault();
                     this.startCapture();
-                }
-                break;
-                
-            case 'F11':
-                // Basculer le mode plein écran
-                if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen();
-                } else {
-                    document.exitFullscreen();
                 }
                 break;
         }
     }
+
+    showError(message) {
+        // Implémenter l'affichage d'erreur
+        console.error(message);
+    }
+
+    showSuccess(message) {
+        // Implémenter l'affichage de succès
+        console.log(message);
+    }
 }
 
-// Initialisation de l'application quand le DOM est chargé
+// Initialisation de l'application
 document.addEventListener('DOMContentLoaded', () => {
     window.photoboothApp = new PhotoboothApp();
-});
-
-// Gestion des erreurs globales
-window.addEventListener('error', (event) => {
-    console.error('Erreur JavaScript:', event.error);
-});
-
-// Gestion des promesses rejetées
-window.addEventListener('unhandledrejection', (event) => {
-    console.error('Promesse rejetée non gérée:', event.reason);
 });

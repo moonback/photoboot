@@ -18,6 +18,44 @@
             <p class="text-xl text-gray-300">Prêt à capturer vos moments !</p>
         </div>
 
+        <!-- Sélection du mode de capture -->
+        <div class="mb-8 text-center">
+            <h3 class="text-lg font-semibold text-gray-300 mb-4">Mode de capture</h3>
+            <div class="flex space-x-4">
+                <button id="single-mode" class="mode-btn active" data-mode="single">
+                    <span class="text-2xl">📸</span>
+                    <span class="block text-sm">1 Photo</span>
+                </button>
+                <button id="multi-mode" class="mode-btn" data-mode="multi">
+                    <span class="text-2xl">🎬</span>
+                    <span class="block text-sm">4 Photos</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sélection du filtre -->
+        <div class="mb-8 text-center">
+            <h3 class="text-lg font-semibold text-gray-300 mb-4">Filtre</h3>
+            <div class="flex space-x-4">
+                <button id="filter-none" class="filter-btn active" data-filter="none">
+                    <span class="text-2xl">✨</span>
+                    <span class="block text-sm">Aucun</span>
+                </button>
+                <button id="filter-vintage" class="filter-btn" data-filter="vintage">
+                    <span class="text-2xl">🎭</span>
+                    <span class="block text-sm">Vintage</span>
+                </button>
+                <button id="filter-bw" class="filter-btn" data-filter="bw">
+                    <span class="text-2xl">⚫</span>
+                    <span class="block text-sm">N&B</span>
+                </button>
+                <button id="filter-warm" class="filter-btn" data-filter="warm">
+                    <span class="text-2xl">🌅</span>
+                    <span class="block text-sm">Chaud</span>
+                </button>
+            </div>
+        </div>
+
         <!-- Bouton principal -->
         <div class="mb-8">
             <button id="start-button" class="start-btn">
@@ -74,13 +112,20 @@
             <canvas id="capture-canvas" class="hidden"></canvas>
         </div>
 
+        <!-- Indicateur de progression pour mode multi -->
+        <div id="multi-progress" class="hidden mb-4">
+            <div class="text-center text-gray-300">
+                <span id="current-photo">1</span> / <span id="total-photos">4</span>
+            </div>
+            <div class="w-64 bg-gray-700 rounded-full h-2 mt-2">
+                <div id="progress-bar" class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: 25%"></div>
+            </div>
+        </div>
+
         <!-- Boutons de contrôle -->
         <div class="flex space-x-4">
             <button id="cancel-capture" class="control-btn bg-red-600 hover:bg-red-700">
                 ❌ Annuler
-            </button>
-            <button id="retake-photo" class="control-btn bg-yellow-600 hover:bg-yellow-700 hidden">
-                🔄 Reprendre
             </button>
         </div>
     </div>
@@ -88,22 +133,69 @@
     <!-- Interface de résultat (cachée par défaut) -->
     <div id="result-interface" class="h-screen hidden flex flex-col items-center justify-center">
         <div class="text-center mb-8">
-            <h2 class="text-4xl font-bold text-green-400 mb-2">Photo prise !</h2>
-            <p class="text-xl text-gray-300">Votre photo est prête</p>
+            <h2 class="text-4xl font-bold text-green-400 mb-2">Photos prises !</h2>
+            <p class="text-xl text-gray-300">Vos photos sont prêtes</p>
         </div>
 
-        <!-- Aperçu de la photo -->
-        <div class="photo-result mb-8">
-            <img id="result-image" class="result-image" alt="Photo prise">
+        <!-- Aperçu des photos -->
+        <div id="photos-grid" class="photos-grid mb-8">
+            <!-- Les photos seront affichées ici dynamiquement -->
         </div>
 
         <!-- Boutons d'action -->
         <div class="flex space-x-4">
-            <button id="new-photo" class="control-btn bg-blue-600 hover:bg-blue-700">
-                📸 Nouvelle photo
+            <button id="retake-photos" class="control-btn bg-yellow-600 hover:bg-yellow-700">
+                🔄 Reprendre
             </button>
-            <button id="download-photo" class="control-btn bg-green-600 hover:bg-green-700">
-                💾 Télécharger
+            <button id="validate-photos" class="control-btn bg-green-600 hover:bg-green-700">
+                ✅ Valider
+            </button>
+        </div>
+    </div>
+
+    <!-- Interface de composition (cachée par défaut) -->
+    <div id="composition-interface" class="h-screen hidden flex flex-col items-center justify-center">
+        <div class="text-center mb-8">
+            <h2 class="text-4xl font-bold text-purple-400 mb-2">Composition</h2>
+            <p class="text-xl text-gray-300">Choisissez votre mise en page</p>
+        </div>
+
+        <!-- Sélection du template -->
+        <div class="mb-8 text-center">
+            <h3 class="text-lg font-semibold text-gray-300 mb-4">Format d'impression</h3>
+            <div class="flex space-x-4">
+                <button id="template-strip" class="template-btn active" data-template="strip_2x6">
+                    <span class="text-2xl">📏</span>
+                    <span class="block text-sm">Bande 2x6</span>
+                </button>
+                <button id="template-postcard" class="template-btn" data-template="postcard_4x6">
+                    <span class="text-2xl">📮</span>
+                    <span class="block text-sm">Carte 4x6</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Texte personnalisé -->
+        <div class="mb-8 text-center">
+            <h3 class="text-lg font-semibold text-gray-300 mb-4">Texte personnalisé</h3>
+            <input type="text" id="custom-text" class="custom-text-input" 
+                   placeholder="Entrez votre texte..." maxlength="50">
+        </div>
+
+        <!-- Aperçu de la composition -->
+        <div class="composition-preview mb-8">
+            <div id="preview-container" class="preview-container">
+                <!-- L'aperçu sera affiché ici -->
+            </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="flex space-x-4">
+            <button id="back-to-results" class="control-btn bg-gray-600 hover:bg-gray-700">
+                ← Retour
+            </button>
+            <button id="generate-print" class="control-btn bg-blue-600 hover:bg-blue-700">
+                🖨️ Générer
             </button>
         </div>
     </div>

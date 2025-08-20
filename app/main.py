@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 from .config import config_manager
-from .routes import health, config_api, auth, admin, upload
+from .routes import health, config_api, auth, admin, upload, compose
 from .admin.auth import admin_auth
 
 
@@ -111,6 +111,7 @@ app.include_router(config_api.router)
 app.include_router(auth.router)
 app.include_router(admin.router)
 app.include_router(upload.router)
+app.include_router(compose.router)
 
 
 # Route racine - page d'accueil
