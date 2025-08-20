@@ -280,28 +280,30 @@ async def export_logs(current_admin: dict = Depends(get_current_admin)):
         
         latest_log = max(log_files, key=lambda x: x.stat().st_mtime)
         
-        # Créer un fichier d'export temporaire
-        export_file = Path("logs") / f"export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-        
+        # Lire le contenu des logs
         try:
-            with open(latest_log, 'r', encoding='utf-8') as source, \
-                 open(export_file, 'w', encoding='utf-8') as target:
-                target.write(f"Export des logs - {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
-                target.write(f"Exporté par: {current_admin.get('username')}\n")
-                target.write("=" * 50 + "\n\n")
-                target.write(source.read())
-            
-            # Retourner le fichier
-            return FileResponse(
-                export_file,
-                media_type='text/plain',
-                filename=f"photobooth_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-            )
-            
-        finally:
-            # Nettoyer le fichier temporaire
-            if export_file.exists():
-                export_file.unlink()
+            with open(latest_log, 'r', encoding='utf-8') as f:
+                log_content = f.read()
+        except Exception as e:
+            logger.error(f"Erreur lors de la lecture du fichier de log: {e}")
+            raise HTTPException(status_code=500, detail="Erreur lors de la lecture des logs")
+        
+        # Créer le contenu de l'export
+        export_content = f"""Export des logs - {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}
+Exporté par: {current_admin.get('username')}
+{'=' * 50}
+
+{log_content}"""
+        
+        # Retourner le contenu en tant que réponse texte
+        from fastapi.responses import Response
+        return Response(
+            content=export_content,
+            media_type='text/plain',
+            headers={
+                'Content-Disposition': f'attachment; filename="photobooth_logs_{datetime.now().strftime("%Y%m%d_%H%M%S")}.txt"'
+            }
+        )
         
     except HTTPException:
         raise
@@ -368,24 +370,42 @@ async def backup_system(current_admin: dict = Depends(get_current_admin)):
             shutil.make_archive(str(backup_path), 'zip', backup_path)
             zip_path = Path(f"{backup_path}.zip")
             
-            # Nettoyer le dossier temporaire
-            shutil.rmtree(backup_path)
-            
             # Retourner le fichier ZIP
-            return FileResponse(
+            response = FileResponse(
                 zip_path,
                 media_type='application/zip',
                 filename=f"{backup_name}.zip"
             )
             
-        finally:
-            # Nettoyer le fichier ZIP temporaire
+            # Nettoyer après l'envoi
+            import asyncio
+            asyncio.create_task(cleanup_backup_files(backup_path, zip_path))
+            
+            return response
+            
+        except Exception as e:
+            # Nettoyer en cas d'erreur
+            if backup_path.exists():
+                shutil.rmtree(backup_path)
             if zip_path.exists():
                 zip_path.unlink()
+            raise e
         
     except Exception as e:
         logger.error(f"Erreur lors de la création de la sauvegarde: {e}")
         raise HTTPException(status_code=500, detail="Erreur lors de la création de la sauvegarde")
+
+
+async def cleanup_backup_files(backup_path: Path, zip_path: Path):
+    """Nettoie les fichiers de sauvegarde après un délai"""
+    await asyncio.sleep(5)  # Attendre 5 secondes
+    try:
+        if backup_path.exists():
+            shutil.rmtree(backup_path)
+        if zip_path.exists():
+            zip_path.unlink()
+    except Exception as e:
+        logger.error(f"Erreur lors du nettoyage des fichiers de sauvegarde: {e}")
 
 
 # Endpoint pour vider le cache

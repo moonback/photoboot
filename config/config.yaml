@@ -1,40 +1,39 @@
-# Configuration Photobooth
-app:
-  name: "Photobooth"
-  version: "1.0.0"
-  debug: false
-
-server:
-  host: "0.0.0.0"
-  port: 8000
-  workers: 1
-
-security:
-  secret_key: "change-me-in-production"
-  session_timeout: 3600  # 1 heure
-  bcrypt_rounds: 12
-
 admin:
-  username: "admin"
-  password_hash: ""  # Sera défini via .env
-
-storage:
-  upload_dir: "uploads"
-  max_file_size: 10485760  # 10MB
-  allowed_extensions: [".jpg", ".jpeg", ".png", ".gif"]
-
-logging:
-  level: "INFO"
-  rotation: "1 day"
-  retention: "30 days"
-  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} - {message}"
-
+  password_hash: $2b$12$dPZdnB8EIWg7.TvNKK2bL.mDOMysiDFRSZqQsuHYArLM7O987gzTC
+  username: admin
+app:
+  debug: false
+  name: Photobooth
+  version: 1.0.0
 camera:
   device_id: 0
-  resolution: [1920, 1080]
   fps: 30
-
+  resolution:
+  - 1920
+  - 1080
+logging:
+  format: '{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} - {message}'
+  level: !!python/object/apply:app.models.LogLevel
+  - INFO
+  retention: 30 days
+  rotation: 1 day
+security:
+  bcrypt_rounds: 12
+  secret_key: your-super-secret-key-here-change-in-production
+  session_timeout: 3600
+server:
+  host: 0.0.0.0
+  port: 8000
+  workers: 1
+storage:
+  allowed_extensions:
+  - .jpg
+  - .jpeg
+  - .png
+  - .gif
+  max_file_size: 10485760
+  upload_dir: uploads
 ui:
   fullscreen: true
-  theme: "dark"
-  language: "fr"
+  language: fr
+  theme: dark
