@@ -326,8 +326,12 @@ class PhotoboothApp {
             const result = await response.json();
             
             if (result.success) {
-                this.showAdminStatus('Connexion réussie !', 'success');
-                setTimeout(() => this.hideAdminModal(), 1500);
+                this.showAdminStatus('Connexion réussie ! Redirection...', 'success');
+                setTimeout(() => {
+                    this.hideAdminModal();
+                    // Rediriger vers la page d'administration
+                    window.location.href = '/admin';
+                }, 1500);
             } else {
                 this.showAdminStatus(result.message || 'Échec de la connexion', 'error');
             }
