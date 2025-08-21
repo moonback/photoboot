@@ -89,30 +89,36 @@
     </div>
 
     <!-- Interface de résultat (cachée par défaut) -->
-    <div id="result-interface" class="h-screen hidden flex flex-col items-center justify-center">
-        <div class="text-center mb-8">
-            <h2 class="text-4xl font-bold text-green-400 mb-2">Photo prise !</h2>
-            <p class="text-xl text-gray-300">Votre photo est prête</p>
+    <div id="result-interface"
+        class="h-screen hidden flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800">
+        <div class="text-center mb-12">
+            <h2 class="text-5xl font-bold text-green-400 mb-4 animate-bounce">Photo prise !</h2>
+            <p class="text-2xl text-gray-300 italic">Votre photo est prête</p>
         </div>
 
         <!-- Aperçu de la photo -->
-        <div class="photo-result mb-8">
-            <img id="result-image" class="result-image" alt="Photo prise">
+        <div
+            class="photo-result mb-12 rounded-lg shadow-2xl overflow-hidden transform hover:scale-105 transition-transform duration-300">
+            <img id="result-image" class="result-image max-w-3xl object-cover" alt="Photo prise">
         </div>
 
         <!-- Boutons d'action -->
-        <div class="flex space-x-4">
-            <button id="new-photo" class="control-btn bg-blue-600 hover:bg-blue-700">
-                📸 Nouvelle photo
+        <div class="flex flex-wrap justify-center gap-6">
+            <button id="new-photo"
+                class="control-btn bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 transform hover:-translate-y-1 transition-all duration-200 shadow-lg rounded-full px-8 py-4">
+                <span class="text-xl">📸 Nouvelle photo</span>
             </button>
-            <button id="download-photo" class="control-btn bg-green-600 hover:bg-green-700">
-                💾 Télécharger
+            <button id="download-photo"
+                class="control-btn bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-900 transform hover:-translate-y-1 transition-all duration-200 shadow-lg rounded-full px-8 py-4">
+                <span class="text-xl">💾 Télécharger</span>
             </button>
-            <button id="print-photo" class="control-btn bg-purple-600 hover:bg-purple-700">
-                🖨️ Imprimer
+            <button id="print-photo"
+                class="control-btn bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 transform hover:-translate-y-1 transition-all duration-200 shadow-lg rounded-full px-8 py-4">
+                <span class="text-xl">🖨️ Imprimer</span>
             </button>
-            <button id="email-photo" class="control-btn bg-orange-600 hover:bg-orange-700">
-                📧 Envoyer par email
+            <button id="email-photo"
+                class="control-btn bg-gradient-to-r from-orange-600 to-orange-800 hover:from-orange-700 hover:to-orange-900 transform hover:-translate-y-1 transition-all duration-200 shadow-lg rounded-full px-8 py-4">
+                <span class="text-xl">📧 Envoyer par email</span>
             </button>
         </div>
     </div>
@@ -207,14 +213,14 @@
     <!-- Scripts -->
     <script src="/static/js/config.js"></script>
     <script src="/static/js/custom-config.js"></script>
-    
+
     <!-- Modules JavaScript refactorisés -->
     <script src="/static/js/modules/FrameManager.js"></script>
     <script src="/static/js/modules/CameraManager.js"></script>
     <script src="/static/js/modules/PhotoManager.js"></script>
     <script src="/static/js/modules/CountdownManager.js"></script>
     <script src="/static/js/modules/InterfaceManager.js"></script>
-    
+
     <!-- Application principale -->
     <script src="/static/js/app.js"></script>
     <script src="/static/js/print-email.js"></script>
