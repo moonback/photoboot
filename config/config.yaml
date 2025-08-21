@@ -13,8 +13,7 @@ camera:
   - 1080
 logging:
   format: '{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} - {message}'
-  level: !!python/object/apply:app.models.LogLevel
-  - INFO
+  level: INFO
   retention: 30 days
   rotation: 1 day
 security:
