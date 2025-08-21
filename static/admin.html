@@ -29,6 +29,76 @@
         .stat-card.danger {
             background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
         }
+
+        /* Styles pour les éléments admin */
+        .admin-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(55, 65, 81, 0.8);
+            border: 1px solid rgba(75, 85, 99, 0.5);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .admin-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: rgba(55, 65, 81, 0.9);
+        }
+
+        .admin-input::placeholder {
+            color: rgba(156, 163, 175, 0.7);
+        }
+
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.8);
+            color: white;
+        }
+
+        .admin-section {
+            display: block;
+        }
+
+        .admin-section.hidden {
+            display: none;
+        }
     </style>
 </head>
 
@@ -66,6 +136,9 @@
                 </button>
                 <button class="nav-item" data-section="system">
                     ⚙️ Configuration système
+                </button>
+                <button class="nav-item" data-section="customization">
+                    🎨 Configuration personnalisée
                 </button>
                 <button class="nav-item" data-section="users">
                     👥 Sessions utilisateurs
@@ -309,6 +382,72 @@
                 </div>
             </div>
 
+            <!-- Section Configuration personnalisée -->
+            <div id="customization-section" class="admin-section hidden">
+                <h2 class="text-3xl font-bold mb-8 text-blue-400">Configuration personnalisée</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="admin-card p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-4">Personnalisation de l'interface</h3>
+                        <form id="customization-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Nom des mariés / Entreprise</label>
+                                <input type="text" id="admin-company-name" class="admin-input"
+                                    placeholder="Ex: Mariage Martin & Dupont">
+                                <p class="text-xs text-gray-400 mt-1">Ce nom sera affiché sur l'interface principale</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Type d'événement / Slogan</label>
+                                <input type="text" id="admin-event-type" class="admin-input"
+                                    placeholder="Ex: Vos moments précieux">
+                                <p class="text-xs text-gray-400 mt-1">Description ou slogan affiché sous le nom</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Couleur d'accent principale</label>
+                                <select id="accent-color" class="admin-input">
+                                    <option value="blue">Bleu</option>
+                                    <option value="purple">Violet</option>
+                                    <option value="green">Vert</option>
+                                    <option value="red">Rouge</option>
+                                    <option value="orange">Orange</option>
+                                    <option value="pink">Rose</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Thème visuel</label>
+                                <select id="visual-theme" class="admin-input">
+                                    <option value="modern">Moderne</option>
+                                    <option value="elegant">Élégant</option>
+                                    <option value="fun">Amusant</option>
+                                    <option value="corporate">Professionnel</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="action-btn bg-green-600 hover:bg-green-700 w-full">
+                                💾 Sauvegarder la personnalisation
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="admin-card p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-4">Aperçu de l'interface</h3>
+                        <div class="bg-gray-800 p-6 rounded-lg">
+                            <div class="text-center">
+                                <div class="text-4xl mb-4">📸</div>
+                                <h3 id="preview-company-name" class="text-2xl font-bold text-blue-400 mb-2">Photo Studio
+                                    Pro</h3>
+                                <p id="preview-event-type" class="text-lg text-gray-300">Vos moments précieux</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-400">
+                            <p>💡 <strong>Conseil :</strong> Cette configuration sera appliquée à l'interface principale
+                                du photobooth.</p>
+                            <p>🔄 <strong>Note :</strong> Les changements sont sauvegardés localement et persistent
+                                entre les sessions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Section Sessions utilisateurs -->
             <div id="users-section" class="admin-section hidden">
                 <h2 class="text-3xl font-bold mb-8 text-blue-400">Sessions utilisateurs</h2>
@@ -361,6 +500,104 @@
 
     <!-- Scripts -->
     <script src="/static/js/admin.js"></script>
+
+    <script>
+        // Gestion de la navigation
+        document.addEventListener('DOMContentLoaded', function () {
+            const navItems = document.querySelectorAll('.nav-item');
+            const adminSections = document.querySelectorAll('.admin-section');
+
+            // Navigation entre les sections
+            navItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    const targetSection = this.getAttribute('data-section');
+
+                    // Mettre à jour les classes actives
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Afficher la section correspondante
+                    adminSections.forEach(section => {
+                        section.classList.add('hidden');
+                    });
+
+                    const targetElement = document.getElementById(targetSection + '-section');
+                    if (targetElement) {
+                        targetElement.classList.remove('hidden');
+                    }
+                });
+            });
+
+            // Gestion de la configuration personnalisée
+            const customizationForm = document.getElementById('customization-form');
+            const adminCompanyName = document.getElementById('admin-company-name');
+            const adminEventType = document.getElementById('admin-event-type');
+            const previewCompanyName = document.getElementById('preview-company-name');
+            const previewEventType = document.getElementById('preview-event-type');
+
+            // Charger la configuration existante
+            function loadCustomization() {
+                const companyName = localStorage.getItem('photobooth-company-name') || 'Photo Studio Pro';
+                const eventType = localStorage.getItem('photobooth-event-type') || 'Vos moments précieux';
+
+                if (adminCompanyName) adminCompanyName.value = companyName;
+                if (adminEventType) adminEventType.value = eventType;
+                if (previewCompanyName) previewCompanyName.textContent = companyName;
+                if (previewEventType) previewEventType.textContent = eventType;
+            }
+
+            // Mettre à jour l'aperçu en temps réel
+            if (adminCompanyName) {
+                adminCompanyName.addEventListener('input', function () {
+                    if (previewCompanyName) {
+                        previewCompanyName.textContent = this.value || 'Photo Studio Pro';
+                    }
+                });
+            }
+
+            if (adminEventType) {
+                adminEventType.addEventListener('input', function () {
+                    if (previewEventType) {
+                        previewEventType.textContent = this.value || 'Vos moments précieux';
+                    }
+                });
+            }
+
+            // Sauvegarder la configuration
+            if (customizationForm) {
+                customizationForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const companyName = adminCompanyName.value.trim();
+                    const eventType = adminEventType.value.trim();
+
+                    if (companyName && eventType) {
+                        // Sauvegarder en localStorage
+                        localStorage.setItem('photobooth-company-name', companyName);
+                        localStorage.setItem('photobooth-event-type', eventType);
+
+                        // Afficher un message de succès
+                        alert('Configuration sauvegardée avec succès !');
+                    } else {
+                        alert('Veuillez remplir tous les champs');
+                    }
+                });
+            }
+
+            // Charger la configuration au démarrage
+            loadCustomization();
+
+            // Gestion de la déconnexion
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function () {
+                    if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                        window.location.href = '/';
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

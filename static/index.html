@@ -391,6 +391,135 @@
         .kiosk-icon {
             filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
         }
+
+        /* Styles pour les modals */
+        .admin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .admin-modal.hidden {
+            display: none !important;
+        }
+
+        .admin-modal-content {
+            background: rgba(31, 41, 55, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .admin-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-modal-header h3 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .admin-modal-body {
+            color: white;
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .admin-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .admin-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .admin-login-btn {
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .admin-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .admin-status {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .admin-status.success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .admin-status.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
     </style>
 </head>
 
@@ -425,9 +554,16 @@
         </div>
 
         <!-- Informations système -->
-        <div class="text-center text-slate-300 kiosk-fade-in-delay-2 kiosk-glass rounded-2xl p-8">
-            <p id="status-text" class="text-xl font-semibold text-green-400 mb-3">✅ Système opérationnel</p>
-            <p id="version-text" class="text-base opacity-75">Version 2.0.0 Pro</p>
+        <div
+            class="text-center text-slate-300 kiosk-fade-in-delay-2 kiosk-glass rounded-3xl p-10 backdrop-blur-lg bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-slate-700/30 shadow-2xl">
+            <div class="flex flex-col items-center gap-4">
+
+                <p id="company-name"
+                    class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                    Photo Studio Pro</p>
+                <div class="w-24 h-0.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full"></div>
+                <p id="event-type" class="text-xl text-slate-400 font-light tracking-wide">Vos moments précieux</p>
+            </div>
         </div>
 
         <!-- Indicateurs en haut à droite -->
@@ -548,6 +684,8 @@
                 </div>
                 <button id="admin-login" class="admin-login-btn kiosk-submit-btn">Se connecter</button>
                 <div id="admin-status" class="admin-status hidden"></div>
+
+
             </div>
         </div>
     </div>
@@ -693,8 +831,25 @@
                             if (username === 'admin' && password === 'admin') {
                                 adminStatus.textContent = 'Connexion réussie !';
                                 adminStatus.className = 'admin-status success';
-                                // Rediriger vers l'interface admin
-                                window.location.href = '/admin';
+
+                                // Afficher la configuration
+                                const adminConfig = document.getElementById('admin-config');
+                                if (adminConfig) {
+                                    adminConfig.classList.remove('hidden');
+
+                                    // Charger la configuration actuelle
+                                    const companyNameInput = document.getElementById('company-name-input');
+                                    const eventTypeInput = document.getElementById('event-type-input');
+                                    const companyNameDisplay = document.getElementById('company-name');
+                                    const eventTypeDisplay = document.getElementById('event-type');
+
+                                    if (companyNameInput && companyNameDisplay) {
+                                        companyNameInput.value = companyNameDisplay.textContent;
+                                    }
+                                    if (eventTypeInput && eventTypeDisplay) {
+                                        eventTypeInput.value = eventTypeDisplay.textContent;
+                                    }
+                                }
                             } else {
                                 adminStatus.textContent = 'Identifiants incorrects';
                                 adminStatus.className = 'admin-status error';
@@ -704,6 +859,52 @@
                         adminStatus.textContent = 'Veuillez remplir tous les champs';
                         adminStatus.className = 'admin-status error';
                         adminStatus.classList.remove('hidden');
+                    }
+                });
+            }
+
+            // Gestion de la sauvegarde de la configuration
+            const saveConfigButton = document.getElementById('save-config');
+            if (saveConfigButton) {
+                saveConfigButton.addEventListener('click', function () {
+                    const companyNameInput = document.getElementById('company-name-input');
+                    const eventTypeInput = document.getElementById('event-type-input');
+                    const configStatus = document.getElementById('config-status');
+
+                    if (companyNameInput && eventTypeInput) {
+                        const companyName = companyNameInput.value.trim();
+                        const eventType = eventTypeInput.value.trim();
+
+                        if (companyName && eventType) {
+                            // Mettre à jour l'affichage
+                            const companyNameDisplay = document.getElementById('company-name');
+                            const eventTypeDisplay = document.getElementById('event-type');
+
+                            if (companyNameDisplay) {
+                                companyNameDisplay.textContent = companyName;
+                            }
+                            if (eventTypeDisplay) {
+                                eventTypeDisplay.textContent = eventType;
+                            }
+
+                            // Sauvegarder en localStorage (ou envoyer au serveur)
+                            localStorage.setItem('photobooth-company-name', companyName);
+                            localStorage.setItem('photobooth-event-type', eventType);
+
+                            // Afficher le statut de succès
+                            configStatus.textContent = 'Configuration sauvegardée !';
+                            configStatus.className = 'admin-status success';
+                            configStatus.classList.remove('hidden');
+
+                            // Masquer le statut après 3 secondes
+                            setTimeout(() => {
+                                configStatus.classList.add('hidden');
+                            }, 3000);
+                        } else {
+                            configStatus.textContent = 'Veuillez remplir tous les champs';
+                            configStatus.className = 'admin-status error';
+                            configStatus.classList.remove('hidden');
+                        }
                     }
                 });
             }
@@ -815,6 +1016,28 @@
             // Mise à jour initiale
             updateCameraStatus();
             updatePhotoCounter();
+
+            // Charger la configuration au démarrage
+            function loadConfiguration() {
+                const companyName = localStorage.getItem('photobooth-company-name');
+                const eventType = localStorage.getItem('photobooth-event-type');
+
+                if (companyName) {
+                    const companyNameDisplay = document.getElementById('company-name');
+                    if (companyNameDisplay) {
+                        companyNameDisplay.textContent = companyName;
+                    }
+                }
+
+                if (eventType) {
+                    const eventTypeDisplay = document.getElementById('event-type');
+                    if (eventTypeDisplay) {
+                        eventTypeDisplay.textContent = eventType;
+                    }
+                }
+            }
+
+            loadConfiguration();
         });
     </script>
 </body>
