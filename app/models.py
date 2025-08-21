@@ -106,3 +106,48 @@ class ConfigResponse(BaseModel):
 class ErrorResponse(BaseModel):
     error: str
     detail: Optional[str] = None
+
+
+# Modèles pour les cadres
+class FrameCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=100)
+    description: Optional[str] = Field("", max_length=500)
+    position: str = Field("center", pattern="^(center|top-left|top-right|bottom-left|bottom-right|custom)$")
+    size: int = Field(100, ge=10, le=200)
+    active: bool = False
+    x: Optional[int] = Field(None, ge=0, le=100)
+    y: Optional[int] = Field(None, ge=0, le=100)
+
+
+class FrameUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    description: Optional[str] = Field(None, max_length=500)
+    position: Optional[str] = Field(None, pattern="^(center|top-left|top-right|bottom-left|bottom-right|custom)$")
+    size: Optional[int] = Field(None, ge=10, le=200)
+    active: Optional[bool] = None
+    x: Optional[int] = Field(None, ge=0, le=100)
+    y: Optional[int] = Field(None, ge=0, le=100)
+
+
+class Frame(BaseModel):
+    id: str
+    name: str
+    description: Optional[str]
+    filename: str
+    position: str
+    size: int
+    active: bool
+    width: int
+    height: int
+    created_at: str
+    created_by: str
+    x: Optional[int] = None
+    y: Optional[int] = None
+
+
+class FrameResponse(BaseModel):
+    frame: Frame
+
+
+class FramesResponse(BaseModel):
+    frames: List[Frame]

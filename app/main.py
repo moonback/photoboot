@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 from .config import config_manager
-from .routes import health, config_api, auth, admin, upload
+from .routes import health, config_api, auth, admin, upload, frames
 from .admin.auth import admin_auth
 
 
@@ -111,6 +111,7 @@ app.include_router(config_api.router)
 app.include_router(auth.router)
 app.include_router(admin.router)
 app.include_router(upload.router)
+app.include_router(frames.router)
 
 
 # Route racine - page d'accueil
@@ -321,6 +322,35 @@ async def serve_uploaded_file(filename: str):
     except Exception as e:
         logger.error(f"Erreur lors de la lecture du fichier {filename}: {e}")
         raise HTTPException(status_code=500, detail="Erreur lors de la lecture du fichier")
+
+
+# Route pour servir les fichiers des cadres
+@app.get("/frames/{filename}")
+async def serve_frame_file(filename: str):
+    """Sert les fichiers des cadres"""
+    try:
+        file_path = Path("frames") / filename
+        
+        # Vérifier que le fichier existe et est dans le dossier frames
+        if not file_path.exists() or not file_path.is_file():
+            raise HTTPException(status_code=404, detail="Fichier non trouvé")
+        
+        # Vérifier que le fichier est bien dans le dossier frames (sécurité)
+        if not str(file_path.resolve()).startswith(str(Path("frames").resolve())):
+            raise HTTPException(status_code=400, detail="Chemin de fichier invalide")
+        
+        # Retourner le fichier PNG
+        return FileResponse(
+            file_path,
+            media_type="image/png",
+            filename=filename
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erreur lors de la lecture du fichier de cadre {filename}: {e}")
+        raise HTTPException(status_code=500, detail="Erreur lors de la lecture du fichier de cadre")
 
 
 if __name__ == "__main__":

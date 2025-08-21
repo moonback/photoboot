@@ -196,6 +196,9 @@ class PhotoboothApp {
         this.photoCount++;
         this.updatePhotoCount();
         
+        // Appliquer le cadre actif si disponible
+        await this.applyActiveFrame();
+        
         // Afficher l'image capturée
         const resultImage = document.getElementById('result-image');
         if (resultImage && this.capturedImage) {
@@ -210,6 +213,112 @@ class PhotoboothApp {
         
         this.isCapturing = false;
         this.updateStatus('Photo capturée et sauvegardée avec succès !');
+    }
+
+    async applyActiveFrame() {
+        try {
+            // Récupérer le cadre actif
+            const response = await fetch('/admin/frames/active');
+            if (!response.ok) {
+                console.log('Aucun cadre actif trouvé');
+                return;
+            }
+            
+            const frameData = await response.json();
+            if (!frameData.frame) {
+                console.log('Aucun cadre actif configuré');
+                return;
+            }
+            
+            const frame = frameData.frame;
+            console.log('Application du cadre:', frame.name);
+            
+            // Créer un canvas temporaire pour appliquer le cadre
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Créer une image à partir du blob capturé
+            const img = new Image();
+            img.onload = () => {
+                // Définir la taille du canvas
+                tempCanvas.width = img.width;
+                tempCanvas.height = img.height;
+                
+                // Dessiner la photo originale
+                tempCtx.drawImage(img, 0, 0);
+                
+                // Charger et appliquer le cadre
+                const frameImg = new Image();
+                frameImg.onload = () => {
+                    // Calculer la position et la taille du cadre
+                    const position = this.calculateFramePosition(frame, img.width, img.height);
+                    const size = this.calculateFrameSize(frame, img.width, img.height);
+                    
+                    // Dessiner le cadre
+                    tempCtx.drawImage(frameImg, position.x, position.y, size.width, size.height);
+                    
+                    // Convertir le résultat en blob
+                    tempCanvas.toBlob((blob) => {
+                        if (blob) {
+                            this.capturedImage = blob;
+                            console.log('Cadre appliqué avec succès');
+                        }
+                    }, 'image/jpeg', 0.9);
+                };
+                
+                frameImg.src = `/frames/${frame.filename}`;
+            };
+            
+            img.src = URL.createObjectURL(this.capturedImage);
+            
+        } catch (error) {
+            console.error('Erreur lors de l\'application du cadre:', error);
+            // Continuer sans cadre en cas d'erreur
+        }
+    }
+
+    calculateFramePosition(frame, photoWidth, photoHeight) {
+        let x, y;
+        
+        switch (frame.position) {
+            case 'top-left':
+                x = 0;
+                y = 0;
+                break;
+            case 'top-right':
+                x = photoWidth - (frame.width || 100);
+                y = 0;
+                break;
+            case 'bottom-left':
+                x = 0;
+                y = photoHeight - (frame.height || 100);
+                break;
+            case 'bottom-right':
+                x = photoWidth - (frame.width || 100);
+                y = photoHeight - (frame.height || 100);
+                break;
+            case 'custom':
+                x = (frame.x || 50) * photoWidth / 100;
+                y = (frame.y || 50) * photoHeight / 100;
+                break;
+            default: // center
+                x = (photoWidth - (frame.width || 100)) / 2;
+                y = (photoHeight - (frame.height || 100)) / 2;
+                break;
+        }
+        
+        return { x, y };
+    }
+
+    calculateFrameSize(frame, photoWidth, photoHeight) {
+        const size = frame.size || 100;
+        const baseWidth = frame.width || 100;
+        const baseHeight = frame.height || 100;
+        
+        return {
+            width: (baseWidth * size) / 100,
+            height: (baseHeight * size) / 100
+        };
     }
 
     async savePhotoToServer() {
