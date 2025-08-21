@@ -254,16 +254,41 @@ class PhotoboothApp {
                     const position = this.calculateFramePosition(frame, img.width, img.height);
                     const size = this.calculateFrameSize(frame, img.width, img.height);
                     
-                    // Dessiner le cadre
-                    tempCtx.drawImage(frameImg, position.x, position.y, size.width, size.height);
+                    console.log('=== DÉBOGAGE CADRE ===');
+                    console.log('Dimensions de la photo:', img.width, 'x', img.height);
+                    console.log('Dimensions du cadre original:', frame.width, 'x', frame.height);
+                    console.log('Taille demandée:', frame.size + '%');
+                    console.log('Position calculée:', position);
+                    console.log('Taille calculée:', size);
+                    console.log('Position du cadre:', frame.position);
+                    console.log('========================');
                     
-                    // Convertir le résultat en blob
+                    // IMPORTANT : Utiliser la composition pour préserver la transparence
+                    // Sauvegarder le contexte actuel
+                    tempCtx.save();
+                    
+                    // Définir le mode de composition pour préserver la transparence
+                    tempCtx.globalCompositeOperation = 'source-over';
+                    
+                    // S'assurer que le cadre couvre toute la photo pour un rendu bord à bord
+                    if (frame.size >= 100) {
+                        // Mode bord à bord : le cadre couvre exactement la photo
+                        tempCtx.drawImage(frameImg, 0, 0, img.width, img.height);
+                    } else {
+                        // Mode redimensionné : positionner le cadre selon la configuration
+                        tempCtx.drawImage(frameImg, position.x, position.y, size.width, size.height);
+                    }
+                    
+                    // Restaurer le contexte
+                    tempCtx.restore();
+                    
+                    // Convertir le résultat en blob avec PNG pour préserver la transparence
                     tempCanvas.toBlob((blob) => {
                         if (blob) {
                             this.capturedImage = blob;
-                            console.log('Cadre appliqué avec succès');
+                            console.log('Cadre appliqué avec succès en PNG');
                         }
-                    }, 'image/jpeg', 0.9);
+                    }, 'image/png', 1.0); // Utiliser PNG pour préserver la transparence
                 };
                 
                 frameImg.src = `/frames/${frame.filename}`;
@@ -280,30 +305,33 @@ class PhotoboothApp {
     calculateFramePosition(frame, photoWidth, photoHeight) {
         let x, y;
         
+        // Calculer d'abord la taille finale du cadre
+        const finalSize = this.calculateFrameSize(frame, photoWidth, photoHeight);
+        
         switch (frame.position) {
             case 'top-left':
                 x = 0;
                 y = 0;
                 break;
             case 'top-right':
-                x = photoWidth - (frame.width || 100);
+                x = photoWidth - finalSize.width;
                 y = 0;
                 break;
             case 'bottom-left':
                 x = 0;
-                y = photoHeight - (frame.height || 100);
+                y = photoHeight - finalSize.height;
                 break;
             case 'bottom-right':
-                x = photoWidth - (frame.width || 100);
-                y = photoHeight - (frame.height || 100);
+                x = photoWidth - finalSize.width;
+                y = photoHeight - finalSize.height;
                 break;
             case 'custom':
                 x = (frame.x || 50) * photoWidth / 100;
                 y = (frame.y || 50) * photoHeight / 100;
                 break;
             default: // center
-                x = (photoWidth - (frame.width || 100)) / 2;
-                y = (photoHeight - (frame.height || 100)) / 2;
+                x = (photoWidth - finalSize.width) / 2;
+                y = (photoHeight - finalSize.height) / 2;
                 break;
         }
         
@@ -312,12 +340,36 @@ class PhotoboothApp {
 
     calculateFrameSize(frame, photoWidth, photoHeight) {
         const size = frame.size || 100;
-        const baseWidth = frame.width || 100;
-        const baseHeight = frame.height || 100;
+        
+        // Pour un usage standard, le cadre doit couvrir toute la photo
+        // Si la taille est 100% ou plus, utiliser les dimensions exactes de la photo
+        if (size >= 100) {
+            return {
+                width: photoWidth,
+                height: photoHeight
+            };
+        }
+        
+        // Pour les tailles inférieures à 100%, calculer proportionnellement
+        // mais en gardant le ratio d'aspect de la photo
+        const scaleFactor = size / 100;
+        const aspectRatio = photoWidth / photoHeight;
+        
+        // Calculer la nouvelle taille en gardant le ratio d'aspect
+        let newWidth, newHeight;
+        if (photoWidth > photoHeight) {
+            // Photo en mode paysage
+            newWidth = photoWidth * scaleFactor;
+            newHeight = newWidth / aspectRatio;
+        } else {
+            // Photo en mode portrait
+            newHeight = photoHeight * scaleFactor;
+            newWidth = newHeight * aspectRatio;
+        }
         
         return {
-            width: (baseWidth * size) / 100,
-            height: (baseHeight * size) / 100
+            width: Math.round(newWidth),
+            height: Math.round(newHeight)
         };
     }
 
