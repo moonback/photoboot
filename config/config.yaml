@@ -1,5 +1,5 @@
 admin:
-  password_hash: $2b$12$QcFKo/wqmIeGf1lT3C90xeSqCpmNpooYL5VSXtltn4bId1e2mQVjq
+  password_hash: $2b$12$VgkZucVTM48sLDUIB5UUpe.R3JUJSHjpS6nINd2f.Jl.W3cfTTSUy
   username: admin
 app:
   debug: false
@@ -13,7 +13,8 @@ camera:
   - 1080
 logging:
   format: '{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} - {message}'
-  level: INFO
+  level: !!python/object/apply:app.models.LogLevel
+  - INFO
   retention: 30 days
   rotation: 1 day
 security:
