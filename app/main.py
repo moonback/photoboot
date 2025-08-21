@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from loguru import logger
@@ -55,20 +57,57 @@ app = FastAPI(
 
 # Configuration des middlewares
 if config_manager.config:
-    # CORS
+    # CORS - Configuration sécurisée
+    allowed_origins = config_manager.config.security.allowed_origins if hasattr(config_manager.config.security, 'allowed_origins') else []
+    if not allowed_origins and config_manager.config.app.debug:
+        # En mode debug, autoriser localhost uniquement
+        allowed_origins = ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:8000", "http://127.0.0.1:8000"]
+    elif not allowed_origins:
+        # En production, autoriser uniquement les domaines configurés
+        allowed_origins = [config_manager.config.server.host]
+    
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],  # À restreindre en production
+        allow_origins=allowed_origins,
         allow_credentials=True,
-        allow_methods=["*"],
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["*"],
+        expose_headers=["X-Process-Time", "X-Total-Count"],
+        max_age=3600,  # Cache CORS pendant 1 heure
     )
     
-    # Trusted Host (sécurité)
+    # Trusted Host (sécurité) - Configuration sécurisée
+    allowed_hosts = config_manager.config.security.allowed_hosts if hasattr(config_manager.config.security, 'allowed_hosts') else []
+    if not allowed_hosts:
+        # Hôtes autorisés par défaut
+        allowed_hosts = [
+            config_manager.config.server.host,
+            "localhost",
+            "127.0.0.1",
+            "::1"
+        ]
+        # Ajouter le nom d'hôte de la configuration si différent
+        if config_manager.config.server.host not in ["0.0.0.0", "localhost", "127.0.0.1"]:
+            allowed_hosts.append(config_manager.config.server.host)
+    
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=["*"]  # À restreindre en production
+        allowed_hosts=allowed_hosts
     )
+    
+    # Middleware de compression GZip
+    app.add_middleware(GZipMiddleware, minimum_size=1000)
+    
+    # Middleware de redirection HTTPS en production uniquement
+    # Ne pas activer en développement local ou sur localhost
+    if (not config_manager.config.app.debug and 
+        config_manager.config.server.host not in ["localhost", "127.0.0.1", "0.0.0.0"] and
+        not config_manager.config.server.host.startswith("192.168.") and
+        not config_manager.config.server.host.startswith("10.")):
+        app.add_middleware(HTTPSRedirectMiddleware)
+        logger.info("Middleware HTTPS redirect activé pour la production")
+    else:
+        logger.info("Middleware HTTPS redirect désactivé pour le développement local")
 
 
 # Middleware de logging des requêtes
@@ -97,11 +136,65 @@ async def log_requests(request: Request, call_next):
 # Middleware de gestion des erreurs
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    logger.error(f"Erreur non gérée: {exc} pour {request.method} {request.url.path}")
+    """Gestionnaire global des exceptions avec logging détaillé"""
+    # Log détaillé de l'erreur
+    logger.error(
+        f"Erreur non gérée: {type(exc).__name__}: {exc}",
+        extra={
+            "url": str(request.url),
+            "method": request.method,
+            "client_ip": request.client.host if request.client else "unknown",
+            "user_agent": request.headers.get("user-agent", "unknown"),
+            "traceback": True
+        }
+    )
     
+    # Retourner une réponse d'erreur appropriée
+    if hasattr(exc, 'status_code'):
+        # Erreur HTTP connue
+        return HTTPException(
+            status_code=exc.status_code,
+            detail=str(exc)
+        )
+    else:
+        # Erreur interne
+        error_detail = str(exc) if config_manager.config and config_manager.config.app.debug else "Erreur interne du serveur"
+        return HTTPException(
+            status_code=500,
+            detail=error_detail
+        )
+
+
+# Gestionnaire spécifique pour les erreurs de validation
+@app.exception_handler(ValueError)
+async def validation_exception_handler(request: Request, exc: ValueError):
+    """Gestionnaire pour les erreurs de validation"""
+    logger.warning(f"Erreur de validation: {exc} pour {request.method} {request.url.path}")
     return HTTPException(
-        status_code=500,
-        detail="Erreur interne du serveur"
+        status_code=400,
+        detail=f"Données invalides: {str(exc)}"
+    )
+
+
+# Gestionnaire pour les erreurs de fichier non trouvé
+@app.exception_handler(FileNotFoundError)
+async def file_not_found_handler(request: Request, exc: FileNotFoundError):
+    """Gestionnaire pour les fichiers non trouvés"""
+    logger.warning(f"Fichier non trouvé: {exc} pour {request.method} {request.url.path}")
+    return HTTPException(
+        status_code=404,
+        detail="Fichier non trouvé"
+    )
+
+
+# Gestionnaire pour les erreurs de permission
+@app.exception_handler(PermissionError)
+async def permission_exception_handler(request: Request, exc: PermissionError):
+    """Gestionnaire pour les erreurs de permission"""
+    logger.warning(f"Erreur de permission: {exc} pour {request.method} {request.url.path}")
+    return HTTPException(
+        status_code=403,
+        detail="Accès refusé"
     )
 
 

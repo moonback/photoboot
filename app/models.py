@@ -22,6 +22,12 @@ class SecurityConfig(BaseModel):
     secret_key: str
     session_timeout: int = Field(3600, ge=300, le=86400)  # 5min à 24h
     bcrypt_rounds: int = Field(12, ge=10, le=16)
+    allowed_origins: List[str] = []
+    allowed_hosts: List[str] = []
+    rate_limit_requests: int = Field(100, ge=10, le=1000)  # Requêtes par minute
+    rate_limit_window: int = Field(60, ge=30, le=3600)  # Fenêtre en secondes
+    max_login_attempts: int = Field(5, ge=3, le=10)  # Tentatives de connexion
+    lockout_duration: int = Field(300, ge=60, le=3600)  # Durée de verrouillage en secondes
 
 
 class AdminConfig(BaseModel):
@@ -84,6 +90,19 @@ class EmailConfig(BaseModel):
     rate_limit_window: int = Field(3600, ge=300, le=86400)  # 5min à 24h
 
 
+class RedisConfig(BaseModel):
+    """Configuration Redis pour la gestion des sessions"""
+    host: str = "localhost"
+    port: int = Field(6379, ge=1, le=65535)
+    db: int = Field(0, ge=0, le=15)
+    password: Optional[str] = None
+    ssl: bool = False
+    ssl_cert_reqs: Optional[str] = None
+    max_connections: int = Field(10, ge=1, le=100)
+    socket_timeout: int = Field(5, ge=1, le=30)
+    socket_connect_timeout: int = Field(5, ge=1, le=30)
+
+
 class AppConfig(BaseModel):
     name: str = "Photobooth"
     version: str = "1.0.0"
@@ -101,6 +120,7 @@ class Config(BaseModel):
     ui: UIConfig
     printing: PrintingConfig
     email: EmailConfig
+    redis: Optional[RedisConfig] = None
 
 
 class HealthResponse(BaseModel):
