@@ -1,5 +1,5 @@
 admin:
-  password_hash: $2b$12$dPZdnB8EIWg7.TvNKK2bL.mDOMysiDFRSZqQsuHYArLM7O987gzTC
+  password_hash: $2b$12$QcFKo/wqmIeGf1lT3C90xeSqCpmNpooYL5VSXtltn4bId1e2mQVjq
   username: admin
 app:
   debug: false

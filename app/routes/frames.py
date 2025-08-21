@@ -12,6 +12,7 @@ import io
 
 from ..admin.auth import admin_auth
 from ..models import FrameCreate, FrameUpdate, Frame
+from ..routes.auth import get_current_admin
 
 router = APIRouter(prefix="/admin/frames", tags=["frames"])
 
@@ -44,30 +45,7 @@ def save_frames_config(config):
         logger.error(f"Erreur lors de la sauvegarde de la configuration des cadres: {e}")
         return False
 
-async def get_current_admin(request):
-    """Dépendance pour récupérer l'utilisateur admin actuel"""
-    try:
-        # Récupérer le token depuis les cookies
-        session_token = request.cookies.get("session_token")
-        
-        if session_token:
-            session_data = admin_auth.validate_session(session_token)
-            if session_data:
-                return session_data
-        
-        # Récupérer le token depuis les headers Authorization
-        auth_header = request.headers.get("Authorization")
-        if auth_header and auth_header.startswith("Bearer "):
-            token = auth_header[7:]  # Enlever "Bearer "
-            session_data = admin_auth.validate_session(token)
-            if session_data:
-                return session_data
-        
-        return None
-        
-    except Exception as e:
-        logger.error(f"Erreur lors de la validation de la session: {e}")
-        return None
+
 
 @router.get("/")
 async def get_frames(request: Request, current_admin: dict = Depends(get_current_admin)):

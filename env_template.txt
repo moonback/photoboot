@@ -1,0 +1,24 @@
+# Configuration de sécurité
+SECRET_KEY=your-super-secret-key-here-change-in-production
+
+# Identifiants admin
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin
+
+# Configuration serveur
+HOST=0.0.0.0
+PORT=8000
+DEBUG=false
+
+# Configuration de session
+SESSION_TIMEOUT=3600
+BCRYPT_ROUNDS=12
+
+# Configuration du stockage
+UPLOAD_DIR=uploads
+MAX_FILE_SIZE=10485760
+
+# Configuration des logs
+LOG_LEVEL=INFO
+LOG_ROTATION=1 day
+LOG_RETENTION=30 days
