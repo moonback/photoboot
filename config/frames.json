@@ -1,0 +1,17 @@
+{
+  "frames": [
+    {
+      "id": "98c07d1e-4cc0-4162-9e1e-330fa35c4582",
+      "name": "test cadre",
+      "description": "test cadre1",
+      "filename": "98c07d1e-4cc0-4162-9e1e-330fa35c4582.png",
+      "position": "center",
+      "size": 100,
+      "active": true,
+      "width": 1920,
+      "height": 1080,
+      "created_at": "2025-08-21T17:14:29.004221",
+      "created_by": "admin"
+    }
+  ]
+}

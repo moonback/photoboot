@@ -1,0 +1,49 @@
+# Configuration Photobooth - Variables d'environnement
+# Copiez ce fichier vers .env et modifiez les valeurs selon votre configuration
+
+# Configuration de base
+SECRET_KEY=your-super-secret-key-here-change-in-production
+DEBUG=false
+HOST=0.0.0.0
+PORT=8000
+
+# Configuration admin
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=your-admin-password
+
+# Configuration stockage
+UPLOAD_DIR=uploads
+MAX_FILE_SIZE=10485760
+
+# Configuration logging
+LOG_LEVEL=INFO
+LOG_ROTATION=1 day
+LOG_RETENTION=30 days
+
+# Configuration impression
+PRINTING_DEFAULT_PRINTER=
+PRINTING_PAPER_SIZE=4x6
+PRINTING_QUALITY=normal
+PRINTING_MAX_COPIES=5
+PRINTING_RETRY_ATTEMPTS=3
+PRINTING_RETRY_DELAY=2
+
+# Configuration email
+EMAIL_SMTP_SERVER=smtp.gmail.com
+EMAIL_SMTP_PORT=587
+EMAIL_SMTP_USE_TLS=true
+EMAIL_SMTP_USE_SSL=false
+EMAIL_SMTP_USERNAME=your-email@gmail.com
+EMAIL_SMTP_PASSWORD=your-app-password
+EMAIL_FROM_EMAIL=your-email@gmail.com
+EMAIL_FROM_NAME=Photobooth
+EMAIL_SUBJECT_TEMPLATE=Votre photo Photobooth
+EMAIL_BODY_TEMPLATE=
+EMAIL_MAX_ATTACHMENT_SIZE=10485760
+EMAIL_THUMBNAIL_SIZE=300,300
+EMAIL_THUMBNAIL_QUALITY=85
+EMAIL_GDPR_CONSENT_REQUIRED=true
+EMAIL_GDPR_CONSENT_TEXT=
+EMAIL_GDPR_RETENTION_DAYS=30
+EMAIL_RATE_LIMIT_EMAILS=10
+EMAIL_RATE_LIMIT_WINDOW=3600

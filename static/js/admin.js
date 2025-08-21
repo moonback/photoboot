@@ -117,6 +117,17 @@ class AdminApp {
         if (logLevelSelect) {
             logLevelSelect.addEventListener('change', (e) => this.filterLogs(e.target.value));
         }
+
+        // Gestion des cadres
+        const frameUploadForm = document.getElementById('frame-upload-form');
+        if (frameUploadForm) {
+            frameUploadForm.addEventListener('submit', (e) => this.uploadFrame(e));
+        }
+
+        const framePositionSelect = document.getElementById('frame-position');
+        if (framePositionSelect) {
+            framePositionSelect.addEventListener('change', (e) => this.toggleCustomPositionInputs(e.target.value));
+        }
     }
 
     showSection(sectionName) {
@@ -153,6 +164,9 @@ class AdminApp {
                 break;
             case 'photos':
                 this.loadPhotos();
+                break;
+            case 'frames':
+                this.loadFrames();
                 break;
             case 'system':
                 this.loadSystemConfig();
@@ -255,6 +269,258 @@ class AdminApp {
                     </div>
                 `;
             }
+        }
+    }
+
+    async loadFrames() {
+        try {
+            const response = await fetch('/admin/frames');
+            const frames = await response.json();
+
+            const container = document.getElementById('frames-list');
+            if (container) {
+                if (frames.frames && frames.frames.length > 0) {
+                    container.innerHTML = frames.frames.map(frame => `
+                        <div class="frame-item bg-gray-800 rounded-lg p-4 border ${frame.active ? 'border-blue-500' : 'border-gray-600'}">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-16 h-16 bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center">
+                                        <img src="/frames/${frame.filename}" alt="${frame.name}" class="w-full h-full object-contain">
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-white">${frame.name}</h4>
+                                        <p class="text-sm text-gray-400">${frame.description || 'Aucune description'}</p>
+                                        <p class="text-xs text-gray-500">Position: ${frame.position} | Taille: ${frame.size}%</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button class="text-xs bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded" onclick="adminApp.previewFrame('${frame.id}')">
+                                        👁️ Prévisualiser
+                                    </button>
+                                    <button class="text-xs ${frame.active ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-600 hover:bg-gray-700'} px-2 py-1 rounded" onclick="adminApp.toggleFrameActive('${frame.id}')">
+                                        ${frame.active ? '✅ Actif' : '🔘 Activer'}
+                                    </button>
+                                    <button class="text-xs bg-red-600 hover:bg-red-700 px-2 py-1 rounded" onclick="adminApp.deleteFrame('${frame.id}')">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="text-gray-400 text-center py-8">
+                            Aucun cadre disponible
+                        </div>
+                    `;
+                }
+            }
+
+            // Charger le cadre actif pour la prévisualisation
+            await this.loadActiveFrame();
+            
+        } catch (error) {
+            console.error('Erreur lors du chargement des cadres:', error);
+            const container = document.getElementById('frames-list');
+            if (container) {
+                container.innerHTML = `
+                    <div class="text-red-400 text-center py-8">
+                        Erreur lors du chargement des cadres
+                    </div>
+                `;
+            }
+        }
+    }
+
+    async loadActiveFrame() {
+        try {
+            const response = await fetch('/admin/frames/active');
+            if (response.ok) {
+                const frame = await response.json();
+                if (frame.frame) {
+                    this.updateFramePreview(frame.frame);
+                }
+            }
+        } catch (error) {
+            console.error('Erreur lors du chargement du cadre actif:', error);
+        }
+    }
+
+    updateFramePreview(frame) {
+        const previewFrame = document.getElementById('preview-frame');
+        if (previewFrame && frame) {
+            // Calculer la position et la taille
+            const position = this.calculateFramePosition(frame);
+            const size = this.calculateFrameSize(frame);
+            
+            previewFrame.style.backgroundImage = `url(/frames/${frame.filename})`;
+            previewFrame.style.backgroundSize = `${size.width}px ${size.height}px`;
+            previewFrame.style.backgroundPosition = `${position.x}px ${position.y}px`;
+            previewFrame.style.backgroundRepeat = 'no-repeat';
+        }
+    }
+
+    calculateFramePosition(frame) {
+        const container = document.getElementById('frame-preview');
+        if (!container) return { x: 0, y: 0 };
+        
+        const containerWidth = container.offsetWidth;
+        const containerHeight = container.offsetHeight;
+        
+        let x, y;
+        
+        switch (frame.position) {
+            case 'top-left':
+                x = 0;
+                y = 0;
+                break;
+            case 'top-right':
+                x = containerWidth - (frame.width || 100);
+                y = 0;
+                break;
+            case 'bottom-left':
+                x = 0;
+                y = containerHeight - (frame.height || 100);
+                break;
+            case 'bottom-right':
+                x = containerWidth - (frame.width || 100);
+                y = containerHeight - (frame.height || 100);
+                break;
+            case 'custom':
+                x = (frame.x || 50) * containerWidth / 100;
+                y = (frame.y || 50) * containerHeight / 100;
+                break;
+            default: // center
+                x = (containerWidth - (frame.width || 100)) / 2;
+                y = (containerHeight - (frame.height || 100)) / 2;
+                break;
+        }
+        
+        return { x, y };
+    }
+
+    calculateFrameSize(frame) {
+        const size = frame.size || 100;
+        const baseSize = 100; // Taille de base en pixels
+        
+        return {
+            width: (baseSize * size) / 100,
+            height: (baseSize * size) / 100
+        };
+    }
+
+    async previewFrame(frameId) {
+        try {
+            const response = await fetch(`/admin/frames/${frameId}`);
+            if (response.ok) {
+                const frame = await response.json();
+                this.updateFramePreview(frame.frame);
+            }
+        } catch (error) {
+            console.error('Erreur lors de la prévisualisation du cadre:', error);
+        }
+    }
+
+    async toggleFrameActive(frameId) {
+        try {
+            const response = await fetch(`/admin/frames/${frameId}/toggle`, {
+                method: 'POST'
+            });
+            
+            if (response.ok) {
+                this.showNotification('Statut du cadre mis à jour', 'success');
+                this.loadFrames(); // Recharger la liste
+            } else {
+                this.showNotification('Erreur lors de la mise à jour', 'error');
+            }
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour du statut:', error);
+            this.showNotification('Erreur lors de la mise à jour', 'error');
+        }
+    }
+
+    async deleteFrame(frameId) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer ce cadre ?')) {
+            try {
+                const response = await fetch(`/admin/frames/${frameId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    this.showNotification('Cadre supprimé', 'success');
+                    this.loadFrames(); // Recharger la liste
+                } else {
+                    this.showNotification('Erreur lors de la suppression', 'error');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la suppression:', error);
+                this.showNotification('Erreur lors de la suppression', 'error');
+            }
+        }
+    }
+
+    async uploadFrame(event) {
+        event.preventDefault();
+        
+        const formData = new FormData();
+        const name = document.getElementById('frame-name').value;
+        const description = document.getElementById('frame-description').value;
+        const file = document.getElementById('frame-file').files[0];
+        const position = document.getElementById('frame-position').value;
+        const size = document.getElementById('frame-size').value;
+        const active = document.getElementById('frame-active').checked;
+        
+        if (!name || !file) {
+            this.showNotification('Veuillez remplir tous les champs obligatoires', 'error');
+            return;
+        }
+        
+        formData.append('name', name);
+        formData.append('description', description);
+        formData.append('file', file);
+        formData.append('position', position);
+        formData.append('size', size);
+        formData.append('active', active);
+        
+        // Ajouter les coordonnées personnalisées si nécessaire
+        if (position === 'custom') {
+            const x = document.getElementById('frame-x').value;
+            const y = document.getElementById('frame-y').value;
+            if (x && y) {
+                formData.append('x', x);
+                formData.append('y', y);
+            }
+        }
+        
+        try {
+            const response = await fetch('/admin/frames', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                this.showNotification('Cadre ajouté avec succès', 'success');
+                this.loadFrames(); // Recharger la liste
+                
+                // Réinitialiser le formulaire
+                event.target.reset();
+                document.getElementById('custom-position-inputs').classList.add('hidden');
+            } else {
+                const error = await response.json();
+                this.showNotification(error.detail || 'Erreur lors de l\'ajout du cadre', 'error');
+            }
+        } catch (error) {
+            console.error('Erreur lors de l\'upload du cadre:', error);
+            this.showNotification('Erreur lors de l\'upload du cadre', 'error');
+        }
+    }
+
+    toggleCustomPositionInputs(position) {
+        const customInputs = document.getElementById('custom-position-inputs');
+        if (position === 'custom') {
+            customInputs.classList.remove('hidden');
+        } else {
+            customInputs.classList.add('hidden');
         }
     }
 
