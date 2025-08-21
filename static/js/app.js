@@ -396,6 +396,29 @@ class PhotoboothApp {
                 const result = await response.json();
                 console.log('Photo sauvegardée:', result);
                 this.updateStatus('Photo sauvegardée avec succès !');
+
+                // Transmettre le chemin de la photo au gestionnaire d'impression/email
+                console.log('=== TRANSMISSION DE LA PHOTO ===');
+                console.log('Tentative de transmission de la photo...');
+                console.log('window.printEmailManager existe:', !!window.printEmailManager);
+                console.log('Type de window.printEmailManager:', typeof window.printEmailManager);
+                console.log('result.filename:', result.filename);
+                console.log('result complet:', result);
+
+                if (window.printEmailManager && result.filename) {
+                    const photoPath = `uploads/${result.filename}`;
+                    const photoUrl = `/uploads/${result.filename}`;
+                    console.log('Transmission de la photo:', { photoPath, photoUrl });
+                    window.printEmailManager.setCurrentPhoto(photoPath, photoUrl);
+                    console.log('Photo transmise au gestionnaire d\'impression/email:', photoPath);
+                } else {
+                    console.error('Impossible de transmettre la photo:', {
+                        printEmailManagerExists: !!window.printEmailManager,
+                        filename: result.filename,
+                        printEmailManagerType: typeof window.printEmailManager
+                    });
+                }
+                console.log('=== FIN TRANSMISSION ===');
             } else {
                 console.error('Erreur lors de la sauvegarde:', response.status);
                 this.updateStatus('Erreur lors de la sauvegarde de la photo');

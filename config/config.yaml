@@ -36,3 +36,29 @@ ui:
   fullscreen: true
   language: fr
   theme: dark
+printing:
+  default_printer: ""
+  paper_size: "4x6"
+  quality: "normal"
+  max_copies: 5
+  retry_attempts: 3
+  retry_delay: 2
+email:
+  smtp_server: ""
+  smtp_port: 587
+  smtp_use_tls: true
+  smtp_use_ssl: false
+  smtp_username: ""
+  smtp_password: ""
+  from_email: ""
+  from_name: "Photobooth"
+  subject_template: "Votre photo Photobooth"
+  body_template: ""
+  max_attachment_size: 10485760
+  thumbnail_size: [300, 300]
+  thumbnail_quality: 85
+  gdpr_consent_required: true
+  gdpr_consent_text: ""
+  gdpr_retention_days: 30
+  rate_limit_emails: 10
+  rate_limit_window: 3600
