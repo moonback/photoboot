@@ -6,56 +6,381 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photo Studio Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .title-font {
+            font-family: 'Orbitron', monospace;
+        }
+
+        /* Background animé */
+        .animated-bg {
+            background: linear-gradient(45deg, #0f0f23, #1a1a3a, #2d1b69, #0f0f23);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            25% {
+                background-position: 100% 50%;
+            }
+
+            50% {
+                background-position: 100% 100%;
+            }
+
+            75% {
+                background-position: 0% 100%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Particules flottantes */
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(59, 130, 246, 0.6);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Bouton principal amélioré */
+        .start-btn {
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50px;
+            padding: 20px 60px;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.6);
+        }
+
+        .start-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .start-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Pulse animation pour le bouton */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 15px 35px rgba(102, 126, 234, 0.8), 0 0 0 20px rgba(102, 126, 234, 0.1);
+            }
+
+            100% {
+                box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            }
+        }
+
+        .start-btn {
+            animation: pulse 2s infinite;
+        }
+
+        /* Indicateurs de statut améliorés */
+        .status-indicator {
+            padding: 12px 20px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .status-indicator::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: statusPulse 2s infinite;
+        }
+
+        .status-indicator.bg-green-500::before {
+            background: #10b981;
+        }
+
+        .status-indicator.bg-red-500::before {
+            background: #ef4444;
+        }
+
+        @keyframes statusPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Bouton admin stylisé */
+        .admin-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .admin-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Compteur de photos stylisé */
+        .photo-counter {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .photo-counter:hover {
+            transform: scale(1.05);
+            border-color: rgba(59, 130, 246, 0.6);
+        }
+
+        /* Titre avec effet néon */
+        .neon-title {
+            text-shadow:
+                0 0 5px currentColor,
+                0 0 10px currentColor,
+                0 0 15px currentColor,
+                0 0 20px #667eea,
+                0 0 35px #667eea,
+                0 0 40px #667eea;
+            animation: neonFlicker 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonFlicker {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Glass morphism pour les éléments */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Animation d'apparition */
+        .fade-in {
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .fade-in-delay {
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .fade-in-delay-2 {
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Effet hover pour les éléments interactifs */
+        .interactive-hover:hover {
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        /* Grid dots pattern */
+        .dots-pattern {
+            background-image: radial-gradient(circle, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+    </style>
 </head>
 
-<body class="bg-black text-white overflow-hidden">
+<body class="animated-bg text-white overflow-hidden relative">
+    <!-- Particules flottantes -->
+    <div class="floating-particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: 1s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: 3s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: 1.5s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: 3.5s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 2.5s;"></div>
+    </div>
+
+    <!-- Pattern de points -->
+    <div class="dots-pattern"></div>
+
     <!-- Interface principale -->
-    <div id="main-interface" class="h-screen flex flex-col items-center justify-center">
+    <div id="main-interface" class="h-screen flex flex-col items-center justify-center relative z-10">
         <!-- Logo et titre -->
-        <div class="text-center mb-12">
+        <div class="text-center mb-16 fade-in">
+            <div class="mb-6">
+                <div class="text-8xl mb-4 animate-bounce">📸</div>
+            </div>
             <h1
-                class="text-6xl font-bold text-transparent bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text mb-4">
-                📸 Photo Studio Pro
+                class="title-font text-7xl font-black neon-title text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text mb-6">
+                Photo Studio Pro
             </h1>
-            <p class="text-xl text-gray-300">Prêt à capturer vos moments !</p>
+            <p class="text-2xl text-gray-300 font-light tracking-wide">
+                Capturez vos moments les plus précieux
+            </p>
+            <div class="w-24 h-1 bg-gradient-to-r from-blue-400 to-purple-600 mx-auto mt-6 rounded-full"></div>
         </div>
 
         <!-- Bouton principal -->
-        <div class="mb-8">
-            <button id="start-button" class="start-btn">
-                <span class="btn-text">DÉMARRER</span>
-                <div class="btn-glow"></div>
+        <div class="mb-12 fade-in-delay">
+            <button id="start-button" class="start-btn group">
+                <span class="relative z-10 flex items-center gap-3">
+                    <span class="text-2xl">🚀</span>
+                    <span>COMMENCER</span>
+                </span>
             </button>
         </div>
 
         <!-- Informations système -->
-        <div class="text-center text-gray-400 text-sm">
-            <p id="status-text">Système prêt</p>
-            <p id="version-text" class="mt-1">Version 1.0.0</p>
+        <div class="text-center text-gray-400 fade-in-delay-2 glass rounded-2xl p-6">
+            <p id="status-text" class="text-lg font-medium text-green-400 mb-2">✅ Système opérationnel</p>
+            <p id="version-text" class="text-sm opacity-75">Version 2.0.0 Pro</p>
         </div>
 
-        <!-- Indicateurs -->
-        <div class="fixed top-4 right-4 flex space-x-2">
-            <div id="camera-status" class="status-indicator bg-red-500">
-                <span class="status-text">Caméra</span>
+        <!-- Indicateurs en haut à droite -->
+        <div class="fixed top-8 right-8 flex flex-col space-y-3 fade-in">
+            <div id="camera-status" class="status-indicator bg-red-500 interactive-hover">
+                <span class="status-text font-medium">📹 Caméra</span>
             </div>
-            <div id="storage-status" class="status-indicator bg-green-500">
-                <span class="status-text">Stockage</span>
+            <div id="storage-status" class="status-indicator bg-green-500 interactive-hover">
+                <span class="status-text font-medium">💾 Stockage</span>
             </div>
         </div>
 
         <!-- Bouton admin (coin bas gauche) -->
-        <div class="fixed bottom-4 left-4">
-            <button id="admin-button" class="admin-btn">
-                ⚙️ Admin
+        <div class="fixed bottom-8 left-8 fade-in">
+            <button id="admin-button" class="admin-btn interactive-hover">
+                <span class="flex items-center gap-2">
+                    <span>⚙️</span>
+                    <span>Administration</span>
+                </span>
             </button>
         </div>
 
-        <!-- Compteur de photos -->
-        <div class="fixed bottom-4 right-4 text-right">
-            <div class="text-2xl font-bold text-blue-400" id="photo-count">0</div>
-            <div class="text-sm text-gray-400">Photos prises</div>
+        <!-- Compteur de photos amélioré -->
+        <div class="fixed bottom-8 right-8 photo-counter fade-in">
+            <div class="text-center">
+                <div class="text-4xl font-bold text-blue-400 mb-2" id="photo-count">0</div>
+                <div class="text-sm text-gray-400 uppercase tracking-wider">Photos capturées</div>
+                <div class="w-full h-1 bg-gray-700 rounded-full mt-3">
+                    <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" style="width: 0%"
+                        id="photo-progress"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Décorations visuelles -->
+        <div class="fixed top-1/4 left-8 opacity-20">
+            <div class="text-6xl animate-pulse">✨</div>
+        </div>
+        <div class="fixed bottom-1/4 right-16 opacity-20">
+            <div class="text-6xl animate-pulse" style="animation-delay: 1s;">⭐</div>
+        </div>
+        <div class="fixed top-1/3 right-1/4 opacity-20">
+            <div class="text-4xl animate-pulse" style="animation-delay: 2s;">💫</div>
         </div>
     </div>
 
@@ -123,7 +448,7 @@
         </div>
     </div>
 
-    <!-- Modal admin -->
+    <!-- Modals (gardées identiques pour la compatibilité) -->
     <div id="admin-modal" class="admin-modal hidden">
         <div class="admin-modal-content">
             <div class="admin-modal-header">
@@ -224,10 +549,178 @@
     <!-- Application principale -->
     <script src="/static/js/app.js"></script>
     <script src="/static/js/print-email.js"></script>
+
     <script>
         // Appliquer la configuration au chargement de la page
         document.addEventListener('DOMContentLoaded', function () {
-            updateInterfaceWithConfig();
+            // Initialiser l'interface avec la configuration
+            if (typeof updateInterfaceWithConfig === 'function') {
+                updateInterfaceWithConfig();
+            }
+
+            // Gestion du bouton admin
+            const adminButton = document.getElementById('admin-button');
+            if (adminButton) {
+                adminButton.addEventListener('click', function () {
+                    const adminModal = document.getElementById('admin-modal');
+                    if (adminModal) {
+                        adminModal.classList.remove('hidden');
+                    }
+                });
+            }
+
+            // Gestion de la fermeture du modal admin
+            const closeAdminButton = document.getElementById('close-admin');
+            if (closeAdminButton) {
+                closeAdminButton.addEventListener('click', function () {
+                    const adminModal = document.getElementById('admin-modal');
+                    if (adminModal) {
+                        adminModal.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Gestion de la connexion admin
+            const adminLoginButton = document.getElementById('admin-login');
+            if (adminLoginButton) {
+                adminLoginButton.addEventListener('click', function () {
+                    const username = document.getElementById('admin-username').value;
+                    const password = document.getElementById('admin-password').value;
+                    const adminStatus = document.getElementById('admin-status');
+
+                    if (username && password) {
+                        // Ici vous pouvez ajouter la logique de connexion admin
+                        adminStatus.textContent = 'Connexion en cours...';
+                        adminStatus.className = 'admin-status';
+                        adminStatus.classList.remove('hidden');
+
+                        // Simulation de connexion (remplacer par votre logique réelle)
+                        setTimeout(() => {
+                            if (username === 'admin' && password === 'admin') {
+                                adminStatus.textContent = 'Connexion réussie !';
+                                adminStatus.className = 'admin-status success';
+                                // Rediriger vers l'interface admin
+                                window.location.href = '/admin';
+                            } else {
+                                adminStatus.textContent = 'Identifiants incorrects';
+                                adminStatus.className = 'admin-status error';
+                            }
+                        }, 1000);
+                    } else {
+                        adminStatus.textContent = 'Veuillez remplir tous les champs';
+                        adminStatus.className = 'admin-status error';
+                        adminStatus.classList.remove('hidden');
+                    }
+                });
+            }
+
+            // Gestion des boutons d'action des photos
+            const newPhotoButton = document.getElementById('new-photo');
+            if (newPhotoButton) {
+                newPhotoButton.addEventListener('click', function () {
+                    if (window.photoboothApp) {
+                        window.photoboothApp.startCapture();
+                    }
+                });
+            }
+
+            const downloadPhotoButton = document.getElementById('download-photo');
+            if (downloadPhotoButton) {
+                downloadPhotoButton.addEventListener('click', function () {
+                    if (window.photoboothApp && window.photoboothApp.photoManager) {
+                        const currentPhoto = window.photoboothApp.photoManager.getCurrentPhoto();
+                        if (currentPhoto) {
+                            window.photoboothApp.photoManager.downloadPhoto(currentPhoto);
+                        }
+                    }
+                });
+            }
+
+            const printPhotoButton = document.getElementById('print-photo');
+            if (printPhotoButton) {
+                printPhotoButton.addEventListener('click', function () {
+                    const printModal = document.getElementById('print-modal');
+                    if (printModal) {
+                        printModal.classList.remove('hidden');
+                    }
+                });
+            }
+
+            const emailPhotoButton = document.getElementById('email-photo');
+            if (emailPhotoButton) {
+                emailPhotoButton.addEventListener('click', function () {
+                    const emailModal = document.getElementById('email-modal');
+                    if (emailModal) {
+                        emailModal.classList.remove('hidden');
+                    }
+                });
+            }
+
+            // Gestion des fermetures des modals
+            const closePrintButton = document.getElementById('close-print');
+            if (closePrintButton) {
+                closePrintButton.addEventListener('click', function () {
+                    const printModal = document.getElementById('print-modal');
+                    if (printModal) {
+                        printModal.classList.add('hidden');
+                    }
+                });
+            }
+
+            const closeEmailButton = document.getElementById('close-email');
+            if (closeEmailButton) {
+                closeEmailButton.addEventListener('click', function () {
+                    const emailModal = document.getElementById('email-modal');
+                    if (emailModal) {
+                        emailModal.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Mettre à jour le statut de la caméra
+            function updateCameraStatus() {
+                const cameraStatus = document.getElementById('camera-status');
+                if (cameraStatus) {
+                    if (window.photoboothApp && window.photoboothApp.cameraManager) {
+                        const isActive = window.photoboothApp.cameraManager.isCameraActive();
+                        if (isActive) {
+                            cameraStatus.className = 'status-indicator bg-green-500 interactive-hover';
+                            cameraStatus.querySelector('.status-text').textContent = '📹 Caméra Active';
+                        } else {
+                            cameraStatus.className = 'status-indicator bg-red-500 interactive-hover';
+                            cameraStatus.querySelector('.status-text').textContent = '📹 Caméra Inactive';
+                        }
+                    }
+                }
+            }
+
+            // Mettre à jour le compteur de photos
+            function updatePhotoCounter() {
+                if (window.photoboothApp && window.photoboothApp.photoManager) {
+                    const photoCount = window.photoboothApp.photoManager.getPhotoCount();
+                    const photoCountElement = document.getElementById('photo-count');
+                    const photoProgressElement = document.getElementById('photo-progress');
+
+                    if (photoCountElement) {
+                        photoCountElement.textContent = photoCount;
+                    }
+
+                    if (photoProgressElement) {
+                        const progress = Math.min((photoCount / 100) * 100, 100);
+                        photoProgressElement.style.width = progress + '%';
+                    }
+                }
+            }
+
+            // Mettre à jour les statuts toutes les 2 secondes
+            setInterval(() => {
+                updateCameraStatus();
+                updatePhotoCounter();
+            }, 2000);
+
+            // Mise à jour initiale
+            updateCameraStatus();
+            updatePhotoCounter();
         });
     </script>
 </body>
