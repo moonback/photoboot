@@ -117,76 +117,12 @@ body {
     transform: translateY(-1px);
 }
 
-/* Interface de capture */
-.camera-preview {
-    position: relative;
-    width: 640px;
-    height: 480px;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-}
-
-.camera-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 20px;
-}
-
-/* Compteur dégressif */
-.countdown-display {
-    text-align: center;
-}
-
-.countdown-number {
-    font-size: 8rem;
-    font-weight: bold;
-    color: var(--primary-color);
-    text-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
-    animation: countdown-pulse 1s ease-in-out;
-}
-
-@keyframes countdown-pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-}
-
-/* Boutons de contrôle */
+/* Styles pour les boutons de contrôle */
 .control-btn {
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 25px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1rem;
+    @apply px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200 transform hover:scale-105;
 }
 
-.control-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-}
-
-/* Interface de résultat */
-.photo-result {
-    max-width: 600px;
-    max-height: 450px;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-}
-
-.result-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 20px;
-}
-
-/* Modal admin */
+/* Styles pour les modals */
 .admin-modal {
     position: fixed;
     top: 0;
@@ -200,18 +136,15 @@ body {
     z-index: 1000;
 }
 
-.admin-modal.hidden {
-    display: none;
-}
-
 .admin-modal-content {
-    background: var(--card-bg);
+    background: rgba(31, 41, 55, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 20px;
     padding: 2rem;
-    max-width: 400px;
+    max-width: 500px;
     width: 90%;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
 }
 
 .admin-modal-header {
@@ -220,18 +153,24 @@ body {
     align-items: center;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-modal-header h3 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
 .close-btn {
     background: none;
     border: none;
-    color: var(--text-secondary);
-    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 2rem;
     cursor: pointer;
     padding: 0;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -240,34 +179,43 @@ body {
 }
 
 .close-btn:hover {
-    background: var(--border-color);
-    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.admin-modal-body {
+    color: white;
 }
 
 .admin-input {
     width: 100%;
-    padding: 0.75rem;
-    background: var(--dark-bg);
-    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 10px;
-    color: var(--text-primary);
+    color: white;
     font-size: 1rem;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .admin-input:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.admin-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .admin-login-btn {
     width: 100%;
-    padding: 0.75rem;
-    background: var(--primary-color);
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border: none;
     border-radius: 10px;
     color: white;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -275,8 +223,8 @@ body {
 }
 
 .admin-login-btn:hover {
-    background: #2563eb;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
 }
 
 .admin-status {
@@ -289,14 +237,65 @@ body {
 
 .admin-status.success {
     background: rgba(16, 185, 129, 0.2);
-    color: var(--success-color);
-    border: 1px solid var(--success-color);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
 }
 
 .admin-status.error {
     background: rgba(239, 68, 68, 0.2);
-    color: var(--danger-color);
-    border: 1px solid var(--danger-color);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+}
+
+/* Styles pour le compteur dégressif */
+.countdown-display {
+    text-align: center;
+}
+
+.countdown-number {
+    font-size: 8rem;
+    font-weight: 900;
+    color: #667eea;
+    text-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
+    animation: countdownPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes countdownPulse {
+    0% {
+        transform: scale(1);
+        text-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
+    }
+    100% {
+        transform: scale(1.1);
+        text-shadow: 0 0 50px rgba(102, 126, 234, 1);
+    }
+}
+
+/* Styles pour l'aperçu caméra */
+.camera-preview {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.camera-video {
+    width: 640px;
+    height: 480px;
+    object-fit: cover;
+    border-radius: 20px;
+}
+
+/* Styles pour l'image de résultat */
+.result-image {
+    max-width: 800px;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* Styles pour les boutons d'action */
+.photo-result {
+    position: relative;
 }
 
 /* Animations d'interface */
@@ -321,17 +320,17 @@ body {
 /* Responsive design */
 @media (max-width: 768px) {
     .start-btn {
-        padding: 1.5rem 3rem;
-        font-size: 1.25rem;
+        padding: 15px 40px;
+        font-size: 18px;
     }
     
-    .camera-preview {
-        width: 90vw;
-        height: 60vh;
+    .camera-video {
+        width: 320px;
+        height: 240px;
     }
     
     .countdown-number {
-        font-size: 6rem;
+        font-size: 4rem;
     }
     
     .admin-modal-content {
@@ -478,4 +477,26 @@ body {
 
 .log-entry:hover {
     background: rgba(255, 255, 255, 0.1);
+}
+
+/* Animations supplémentaires */
+.hidden {
+    display: none !important;
+}
+
+/* Effet de focus pour les boutons */
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+/* Transitions fluides */
+* {
+    transition: all 0.3s ease;
+}
+
+/* Effet de survol pour les éléments interactifs */
+.interactive-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }

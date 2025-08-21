@@ -6,160 +6,804 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photo Studio Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap');
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .title-font {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Background professionnel */
+        .kiosk-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kiosk-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+        }
+
+        /* Grille subtile améliorée */
+        .grid-pattern {
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Bouton principal kiosque - optimisé tactile */
+        .kiosk-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border: none;
+            border-radius: 24px;
+            padding: 32px 100px;
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 25px 50px rgba(59, 130, 246, 0.4),
+                0 0 0 2px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            min-height: 100px;
+            min-width: 300px;
+        }
+
+        .kiosk-btn:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow:
+                0 35px 70px rgba(59, 130, 246, 0.5),
+                0 0 0 3px rgba(255, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .kiosk-btn:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        .kiosk-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .kiosk-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Animation pulse améliorée */
+        @keyframes kioskPulse {
+
+            0%,
+            100% {
+                box-shadow:
+                    0 25px 50px rgba(59, 130, 246, 0.4),
+                    0 0 0 2px rgba(255, 255, 255, 0.1),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            }
+
+            50% {
+                box-shadow:
+                    0 25px 50px rgba(59, 130, 246, 0.6),
+                    0 0 0 3px rgba(255, 255, 255, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+            }
+        }
+
+        .kiosk-btn {
+            animation: kioskPulse 4s ease-in-out infinite;
+        }
+
+        /* Titre kiosque amélioré */
+        .kiosk-title {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Indicateurs de statut kiosque - optimisés tactile */
+        .kiosk-status {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid rgba(148, 163, 184, 0.3);
+            border-radius: 16px;
+            padding: 20px 28px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            backdrop-filter: blur(25px);
+            transition: all 0.4s ease;
+            font-weight: 600;
+            font-size: 16px;
+            min-height: 70px;
+            min-width: 160px;
+        }
+
+        .kiosk-status:hover {
+            background: rgba(15, 23, 42, 0.95);
+            border-color: rgba(148, 163, 184, 0.5);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .kiosk-status::before {
+            content: '';
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            animation: statusPulse 2s infinite;
+        }
+
+        .kiosk-status.bg-green-500::before {
+            background: #10b981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+        }
+
+        .kiosk-status.bg-red-500::before {
+            background: #ef4444;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+        }
+
+        @keyframes statusPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Bouton admin kiosque - optimisé tactile */
+        .kiosk-admin-btn {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid rgba(148, 163, 184, 0.4);
+            border-radius: 16px;
+            padding: 20px 28px;
+            color: rgba(248, 250, 252, 0.95);
+            backdrop-filter: blur(25px);
+            transition: all 0.4s ease;
+            font-size: 16px;
+            font-weight: 600;
+            min-height: 70px;
+            min-width: 200px;
+        }
+
+        .kiosk-admin-btn:hover {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: rgba(148, 163, 184, 0.6);
+            color: white;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Compteur de photos kiosque - optimisé tactile */
+        .kiosk-counter {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid rgba(59, 130, 246, 0.4);
+            border-radius: 20px;
+            padding: 28px;
+            backdrop-filter: blur(25px);
+            transition: all 0.4s ease;
+            min-height: 140px;
+            min-width: 180px;
+        }
+
+        .kiosk-counter:hover {
+            transform: scale(1.03);
+            border-color: rgba(59, 130, 246, 0.6);
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Interface de capture kiosque - optimisée tactile */
+        .kiosk-capture {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 3px solid rgba(59, 130, 246, 0.3);
+            border-radius: 24px;
+            padding: 40px;
+        }
+
+        /* Compteur dégressif kiosque - optimisé tactile */
+        .kiosk-countdown {
+            font-size: 140px;
+            font-weight: 900;
+            color: #3b82f6;
+            text-shadow:
+                0 0 25px rgba(59, 130, 246, 0.6),
+                0 0 50px rgba(59, 130, 246, 0.4);
+            animation: countdownPulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes countdownPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        /* Boutons de contrôle kiosque - optimisés tactile */
+        .kiosk-control-btn {
+            background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 20px 40px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            font-size: 18px;
+            backdrop-filter: blur(15px);
+            min-height: 70px;
+            min-width: 160px;
+        }
+
+        .kiosk-control-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
+        }
+
+        /* Interface de résultat kiosque - optimisée tactile */
+        .kiosk-result {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 3px solid rgba(16, 185, 129, 0.4);
+            border-radius: 24px;
+            padding: 40px;
+        }
+
+        /* Boutons d'action kiosque - optimisés tactile */
+        .kiosk-action-btn {
+            background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 24px 48px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            font-size: 20px;
+            backdrop-filter: blur(15px);
+            min-width: 220px;
+            min-height: 80px;
+        }
+
+        .kiosk-action-btn:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .kiosk-action-btn.primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .kiosk-action-btn.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .kiosk-action-btn.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .kiosk-action-btn.info {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        }
+
+        /* Modal kiosque - optimisé tactile */
+        .kiosk-modal {
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(40px);
+        }
+
+        .kiosk-modal-content {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border: 2px solid rgba(148, 163, 184, 0.4);
+            border-radius: 20px;
+            box-shadow:
+                0 30px 60px rgba(0, 0, 0, 0.6),
+                0 0 0 2px rgba(255, 255, 255, 0.1);
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 95%;
+        }
+
+        .kiosk-input {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid rgba(148, 163, 184, 0.4);
+            border-radius: 12px;
+            color: white;
+            transition: all 0.4s ease;
+            padding: 16px 20px;
+            font-size: 16px;
+            min-height: 60px;
+        }
+
+        .kiosk-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+            background: rgba(15, 23, 42, 0.95);
+            transform: scale(1.02);
+        }
+
+        .kiosk-submit-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 12px;
+            transition: all 0.4s ease;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            min-height: 60px;
+        }
+
+        .kiosk-submit-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Animations d'apparition améliorées */
+        .kiosk-fade-in {
+            animation: kioskFadeIn 1s ease-out;
+        }
+
+        .kiosk-fade-in-delay {
+            animation: kioskFadeIn 1s ease-out 0.3s both;
+        }
+
+        .kiosk-fade-in-delay-2 {
+            animation: kioskFadeIn 1s ease-out 0.6s both;
+        }
+
+        @keyframes kioskFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Effet glassmorphism amélioré */
+        .kiosk-glass {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Logo et icônes améliorés */
+        .kiosk-logo {
+            font-size: 120px;
+            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4));
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .kiosk-icon {
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Responsive pour écrans tactiles */
+        @media (max-width: 768px) {
+            .kiosk-btn {
+                padding: 28px 80px;
+                font-size: 28px;
+                min-height: 90px;
+                min-width: 280px;
+            }
+
+            .kiosk-status,
+            .kiosk-admin-btn {
+                padding: 18px 24px;
+                min-height: 65px;
+                font-size: 15px;
+            }
+
+            .kiosk-action-btn {
+                padding: 20px 40px;
+                font-size: 18px;
+                min-width: 200px;
+                min-height: 70px;
+            }
+
+            .kiosk-countdown {
+                font-size: 120px;
+            }
+        }
+
+        /* Effet de focus pour l'accessibilité tactile */
+        .kiosk-btn:focus,
+        .kiosk-admin-btn:focus,
+        .kiosk-action-btn:focus,
+        .kiosk-control-btn:focus {
+            outline: none;
+            box-shadow:
+                0 0 0 4px rgba(59, 130, 246, 0.3),
+                0 0 0 2px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Styles pour les modals */
+        .admin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .admin-modal.hidden {
+            display: none !important;
+        }
+
+        .admin-modal-content {
+            background: rgba(31, 41, 55, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .admin-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-modal-header h3 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .admin-modal-body {
+            color: white;
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .admin-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .admin-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .admin-login-btn {
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .admin-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .admin-status {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .admin-status.success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .admin-status.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+    </style>
 </head>
 
-<body class="bg-black text-white overflow-hidden">
+<body class="kiosk-bg text-white overflow-hidden relative">
+    <!-- Grille de fond -->
+    <div class="grid-pattern"></div>
+
     <!-- Interface principale -->
-    <div id="main-interface" class="h-screen flex flex-col items-center justify-center">
+    <div id="main-interface" class="h-screen flex flex-col items-center justify-center relative z-10">
         <!-- Logo et titre -->
-        <div class="text-center mb-12">
-            <h1
-                class="text-6xl font-bold text-transparent bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text mb-4">
-                📸 Photo Studio Pro
+        <div class="text-center mb-24 kiosk-fade-in">
+
+            <h1 class="title-font text-9xl font-black kiosk-title mb-10">
+                Photo Studio Pro
             </h1>
-            <p class="text-xl text-gray-300">Prêt à capturer vos moments !</p>
+            <p class="text-4xl text-slate-300 font-light tracking-wide mb-10">
+                Capturez vos moments les plus précieux
+            </p>
+            <div class="w-40 h-2 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto rounded-full shadow-lg"></div>
         </div>
 
         <!-- Bouton principal -->
-        <div class="mb-8">
-            <button id="start-button" class="start-btn">
-                <span class="btn-text">DÉMARRER</span>
-                <div class="btn-glow"></div>
+        <div class="mb-20 kiosk-fade-in-delay">
+            <button id="start-button" class="kiosk-btn group">
+                <span class="relative z-10 flex items-center gap-6">
+                    <span class="text-4xl">🚀</span>
+                    <span>COMMENCER</span>
+                </span>
             </button>
         </div>
 
         <!-- Informations système -->
-        <div class="text-center text-gray-400 text-sm">
-            <p id="status-text">Système prêt</p>
-            <p id="version-text" class="mt-1">Version 1.0.0</p>
+        <div
+            class="text-center text-slate-300 kiosk-fade-in-delay-2 kiosk-glass rounded-3xl p-10 backdrop-blur-lg bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-slate-700/30 shadow-2xl">
+            <div class="flex flex-col items-center gap-4">
+                <p id="company-name"
+                    class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                    Photo Studio Pro</p>
+                <div class="w-24 h-0.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full"></div>
+                <p id="event-type" class="text-xl text-slate-400 font-light tracking-wide">Vos moments précieux</p>
+            </div>
         </div>
 
-        <!-- Indicateurs -->
-        <div class="fixed top-4 right-4 flex space-x-2">
-            <div id="camera-status" class="status-indicator bg-red-500">
-                <span class="status-text">Caméra</span>
-            </div>
-            <div id="storage-status" class="status-indicator bg-green-500">
-                <span class="status-text">Stockage</span>
-            </div>
-        </div>
+
 
         <!-- Bouton admin (coin bas gauche) -->
-        <div class="fixed bottom-4 left-4">
-            <button id="admin-button" class="admin-btn">
-                ⚙️ Admin
+        <div class="fixed bottom-12 left-12 kiosk-fade-in">
+            <button id="admin-button" class="kiosk-admin-btn">
+                <span class="flex items-center gap-4">
+                    <span class="text-2xl">⚙️</span>
+                    <span>Administration</span>
+                </span>
             </button>
         </div>
 
-        <!-- Compteur de photos -->
-        <div class="fixed bottom-4 right-4 text-right">
-            <div class="text-2xl font-bold text-blue-400" id="photo-count">0</div>
-            <div class="text-sm text-gray-400">Photos prises</div>
+        <!-- Compteur de photos amélioré -->
+        <div class="fixed bottom-12 right-12 kiosk-counter kiosk-fade-in">
+            <div class="text-center">
+                <div class="text-6xl font-bold text-blue-400 mb-4" id="photo-count">0</div>
+                <div class="text-lg text-slate-400 uppercase tracking-wider mb-5">Photos capturées</div>
+                <div class="w-full h-3 bg-slate-700 rounded-full shadow-inner">
+                    <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-700 ease-out"
+                        style="width: 0%" id="photo-progress"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Décorations visuelles subtiles -->
+        <div class="fixed top-1/4 left-12 opacity-15">
+            <div class="text-8xl animate-pulse">✨</div>
+        </div>
+        <div class="fixed bottom-1/4 right-20 opacity-15">
+            <div class="text-8xl animate-pulse" style="animation-delay: 1s;">⭐</div>
         </div>
     </div>
 
     <!-- Interface de capture (cachée par défaut) -->
-    <div id="capture-interface" class="h-screen hidden flex flex-col items-center justify-center">
-        <div class="text-center mb-8">
-            <h2 class="text-4xl font-bold text-blue-400 mb-2">Préparez-vous !</h2>
-            <p class="text-xl text-gray-300">La photo sera prise dans</p>
+    <div id="capture-interface" class="h-screen hidden flex flex-col items-center justify-center kiosk-capture">
+        <div class="text-center mb-16">
+            <h2 class="text-6xl font-bold text-blue-400 mb-6">Préparez-vous !</h2>
+            <p class="text-3xl text-slate-300">La photo sera prise dans</p>
         </div>
 
         <!-- Compteur dégressif -->
-        <div class="countdown-display mb-8">
-            <span id="countdown-number" class="countdown-number">3</span>
+        <div class="mb-16">
+            <span id="countdown-number" class="kiosk-countdown">3</span>
         </div>
 
         <!-- Aperçu caméra -->
-        <div class="camera-preview mb-8">
-            <video id="camera-video" autoplay muted class="camera-video"></video>
+        <div class="mb-16">
+            <video id="camera-video" autoplay muted class="rounded-3xl shadow-2xl border-4 border-blue-400/30"></video>
             <canvas id="capture-canvas" class="hidden"></canvas>
         </div>
 
         <!-- Boutons de contrôle -->
-        <div class="flex space-x-4">
-            <button id="cancel-capture" class="control-btn bg-red-600 hover:bg-red-700">
-                ❌ Annuler
+        <div class="flex space-x-8">
+            <button id="cancel-capture" class="kiosk-control-btn">
+                <span class="flex items-center gap-3">
+                    <span class="text-2xl">❌</span>
+                    <span>Annuler</span>
+                </span>
             </button>
-            <button id="retake-photo" class="control-btn bg-yellow-600 hover:bg-yellow-700 hidden">
-                🔄 Reprendre
+            <button id="retake-photo" class="kiosk-control-btn hidden">
+                <span class="flex items-center gap-3">
+                    <span class="text-2xl">🔄</span>
+                    <span>Reprendre</span>
+                </span>
             </button>
         </div>
     </div>
 
     <!-- Interface de résultat (cachée par défaut) -->
-    <div id="result-interface" class="h-screen hidden flex flex-col items-center justify-center">
-        <div class="text-center mb-8">
-            <h2 class="text-4xl font-bold text-green-400 mb-2">Photo prise !</h2>
-            <p class="text-xl text-gray-300">Votre photo est prête</p>
+    <div id="result-interface" class="h-screen hidden flex flex-col items-center justify-center kiosk-result">
+        <div class="text-center mb-20">
+            <h2 class="text-7xl font-bold text-green-400 mb-8 animate-bounce">Photo prise !</h2>
+            <p class="text-4xl text-slate-300 italic">Votre photo est prête</p>
         </div>
 
         <!-- Aperçu de la photo -->
-        <div class="photo-result mb-8">
-            <img id="result-image" class="result-image" alt="Photo prise">
+        <div
+            class="mb-20 rounded-3xl shadow-2xl overflow-hidden transform hover:scale-105 transition-transform duration-700 border-4 border-green-400/30">
+            <img id="result-image" class="max-w-5xl object-cover" alt="Photo prise">
         </div>
 
         <!-- Boutons d'action -->
-        <div class="flex space-x-4">
-            <button id="new-photo" class="control-btn bg-blue-600 hover:bg-blue-700">
-                📸 Nouvelle photo
+        <div class="flex flex-wrap justify-center gap-10">
+            <button id="new-photo" class="kiosk-action-btn primary">
+                <span class="flex items-center gap-4">
+                    <span class="text-2xl">📸</span>
+                    <span>Nouvelle photo</span>
+                </span>
             </button>
-            <button id="download-photo" class="control-btn bg-green-600 hover:bg-green-700">
-                💾 Télécharger
+            <button id="download-photo" class="kiosk-action-btn success">
+                <span class="flex items-center gap-4">
+                    <span class="text-2xl">💾</span>
+                    <span>Télécharger</span>
+                </span>
             </button>
-            <button id="print-photo" class="control-btn bg-purple-600 hover:bg-purple-700">
-                🖨️ Imprimer
+            <button id="print-photo" class="kiosk-action-btn warning">
+                <span class="flex items-center gap-4">
+                    <span class="text-2xl">🖨️</span>
+                    <span>Imprimer</span>
+                </span>
             </button>
-            <button id="email-photo" class="control-btn bg-orange-600 hover:bg-orange-700">
-                📧 Envoyer par email
+            <button id="email-photo" class="kiosk-action-btn info">
+                <span class="flex items-center gap-4">
+                    <span class="text-2xl">📧</span>
+                    <span>Envoyer par email</span>
+                </span>
             </button>
         </div>
     </div>
 
-    <!-- Modal admin -->
-    <div id="admin-modal" class="admin-modal hidden">
-        <div class="admin-modal-content">
+    <!-- Modals -->
+    <div id="admin-modal" class="admin-modal kiosk-modal hidden">
+        <div class="admin-modal-content kiosk-modal-content">
             <div class="admin-modal-header">
-                <h3 class="text-xl font-bold">Administration</h3>
+                <h3 class="text-2xl font-bold">Administration</h3>
                 <button id="close-admin" class="close-btn">&times;</button>
             </div>
             <div class="admin-modal-body">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">Nom d'utilisateur</label>
-                    <input type="text" id="admin-username" class="admin-input" placeholder="admin">
+                <div class="mb-6">
+                    <label class="block text-base font-medium mb-3">Nom d'utilisateur</label>
+                    <input type="text" id="admin-username" class="admin-input kiosk-input" placeholder="admin">
                 </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">Mot de passe</label>
-                    <input type="password" id="admin-password" class="admin-input" placeholder="••••••••">
+                <div class="mb-6">
+                    <label class="block text-base font-medium mb-3">Mot de passe</label>
+                    <input type="password" id="admin-password" class="admin-input kiosk-input" placeholder="••••••••">
                 </div>
-                <button id="admin-login" class="admin-login-btn">Se connecter</button>
+                <button id="admin-login" class="admin-login-btn kiosk-submit-btn">Se connecter</button>
                 <div id="admin-status" class="admin-status hidden"></div>
             </div>
         </div>
     </div>
 
     <!-- Modal impression -->
-    <div id="print-modal" class="admin-modal hidden">
-        <div class="admin-modal-content">
+    <div id="print-modal" class="admin-modal kiosk-modal hidden">
+        <div class="admin-modal-content kiosk-modal-content">
             <div class="admin-modal-header">
-                <h3 class="text-xl font-bold">Impression</h3>
+                <h3 class="text-2xl font-bold">Impression</h3>
                 <button id="close-print" class="close-btn">&times;</button>
             </div>
             <div class="admin-modal-body">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">Imprimante</label>
-                    <select id="printer-select" class="admin-input">
+                <div class="mb-6">
+                    <label class="block text-base font-medium mb-3">Imprimante</label>
+                    <select id="printer-select" class="admin-input kiosk-input">
                         <option value="">Imprimante par défaut</option>
                     </select>
                 </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">Nombre de copies</label>
-                    <input type="number" id="print-copies" class="admin-input" value="1" min="1" max="10">
+                <div class="mb-6">
+                    <label class="block text-base font-medium mb-3">Nombre de copies</label>
+                    <input type="number" id="print-copies" class="admin-input kiosk-input" value="1" min="1" max="10">
                 </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">Format papier</label>
-                    <select id="paper-size" class="admin-input">
+                <div class="mb-6">
+                    <label class="block text-base font-medium mb-3">Format papier</label>
+                    <select id="paper-size" class="admin-input kiosk-input">
                         <option value="4x6">4x6 pouces</option>
                         <option value="5x7">5x7 pouces</option>
                         <option value="6x8">6x8 pouces</option>
@@ -167,38 +811,39 @@
                         <option value="letter">Letter</option>
                     </select>
                 </div>
-                <button id="start-print" class="admin-login-btn">Imprimer</button>
+                <button id="start-print" class="admin-login-btn kiosk-submit-btn">Imprimer</button>
                 <div id="print-status" class="admin-status hidden"></div>
             </div>
         </div>
     </div>
 
     <!-- Modal email -->
-    <div id="email-modal" class="admin-modal hidden">
-        <div class="admin-modal-content">
+    <div id="email-modal" class="admin-modal kiosk-modal hidden">
+        <div class="admin-modal-content kiosk-modal-content">
             <div class="admin-modal-header">
-                <h3 class="text-xl font-bold">Envoi par email</h3>
+                <h3 class="text-2xl font-bold">Envoi par email</h3>
                 <button id="close-email" class="close-btn">&times;</button>
             </div>
             <div class="admin-modal-body">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">Votre nom (optionnel)</label>
-                    <input type="text" id="user-name" class="admin-input" placeholder="Votre nom">
+                <div class="mb-6">
+                    <label class="block text-base font-medium mb-3">Votre nom (optionnel)</label>
+                    <input type="text" id="user-name" class="admin-input kiosk-input" placeholder="Votre nom">
                 </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">Adresse email</label>
-                    <input type="email" id="user-email" class="admin-input" placeholder="votre@email.com" required>
+                <div class="mb-6">
+                    <label class="block text-base font-medium mb-3">Adresse email</label>
+                    <input type="email" id="user-email" class="admin-input kiosk-input" placeholder="votre@email.com"
+                        required>
                 </div>
-                <div class="mb-4">
+                <div class="mb-6">
                     <div class="flex items-center">
-                        <input type="checkbox" id="gdpr-consent" class="mr-2">
-                        <label for="gdpr-consent" class="text-sm text-gray-300">
+                        <input type="checkbox" id="gdpr-consent" class="mr-3 scale-125">
+                        <label for="gdpr-consent" class="text-base text-slate-300">
                             J'accepte que mes données soient utilisées pour l'envoi de cette photo
                         </label>
                     </div>
-                    <div id="gdpr-text" class="text-xs text-gray-400 mt-2 hidden"></div>
+                    <div id="gdpr-text" class="text-sm text-slate-400 mt-3 hidden"></div>
                 </div>
-                <button id="send-email" class="admin-login-btn">Envoyer</button>
+                <button id="send-email" class="admin-login-btn kiosk-submit-btn">Envoyer</button>
                 <div id="email-status" class="admin-status hidden"></div>
             </div>
         </div>
@@ -207,12 +852,290 @@
     <!-- Scripts -->
     <script src="/static/js/config.js"></script>
     <script src="/static/js/custom-config.js"></script>
+
+    <!-- Modules JavaScript refactorisés -->
+    <script src="/static/js/modules/FrameManager.js"></script>
+    <script src="/static/js/modules/CameraManager.js"></script>
+    <script src="/static/js/modules/PhotoManager.js"></script>
+    <script src="/static/js/modules/CountdownManager.js"></script>
+    <script src="/static/js/modules/InterfaceManager.js"></script>
+
+    <!-- Application principale -->
     <script src="/static/js/app.js"></script>
     <script src="/static/js/print-email.js"></script>
+
     <script>
         // Appliquer la configuration au chargement de la page
         document.addEventListener('DOMContentLoaded', function () {
-            updateInterfaceWithConfig();
+            console.log('🚀 DOM chargé - Initialisation des événements...');
+
+            // Initialiser l'interface avec la configuration
+            if (typeof updateInterfaceWithConfig === 'function') {
+                updateInterfaceWithConfig();
+            }
+
+            // Gestion du bouton admin
+            const adminButton = document.getElementById('admin-button');
+            console.log('🔍 Bouton admin trouvé:', adminButton);
+
+            if (adminButton) {
+                console.log('✅ Ajout de l\'événement click au bouton admin');
+                adminButton.addEventListener('click', function () {
+                    console.log('🎯 Clic sur le bouton admin détecté !');
+                    const adminModal = document.getElementById('admin-modal');
+                    if (adminModal) {
+                        console.log('✅ Modal admin trouvé, ouverture...');
+                        adminModal.classList.remove('hidden');
+                    } else {
+                        console.error('❌ Modal admin non trouvé !');
+                    }
+                });
+            } else {
+                console.error('❌ Bouton admin non trouvé !');
+            }
+
+            // Gestion de la fermeture du modal admin
+            const closeAdminButton = document.getElementById('close-admin');
+            if (closeAdminButton) {
+                closeAdminButton.addEventListener('click', function () {
+                    const adminModal = document.getElementById('admin-modal');
+                    if (adminModal) {
+                        adminModal.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Gestion de la connexion admin
+            const adminLoginButton = document.getElementById('admin-login');
+            if (adminLoginButton) {
+                adminLoginButton.addEventListener('click', function () {
+                    const username = document.getElementById('admin-username').value;
+                    const password = document.getElementById('admin-password').value;
+                    const adminStatus = document.getElementById('admin-status');
+
+                    if (username && password) {
+                        // Ici vous pouvez ajouter la logique de connexion admin
+                        adminStatus.textContent = 'Connexion en cours...';
+                        adminStatus.className = 'admin-status';
+                        adminStatus.classList.remove('hidden');
+
+                        // Simulation de connexion (remplacer par votre logique réelle)
+                        setTimeout(() => {
+                            if (username === 'admin' && password === 'admin') {
+                                adminStatus.textContent = 'Connexion réussie !';
+                                adminStatus.className = 'admin-status success';
+
+                                // Afficher la configuration
+                                const adminConfig = document.getElementById('admin-config');
+                                if (adminConfig) {
+                                    adminConfig.classList.remove('hidden');
+
+                                    // Charger la configuration actuelle
+                                    const companyNameInput = document.getElementById('company-name-input');
+                                    const eventTypeInput = document.getElementById('event-type-input');
+                                    const companyNameDisplay = document.getElementById('company-name');
+                                    const eventTypeDisplay = document.getElementById('event-type');
+
+                                    if (companyNameInput && companyNameDisplay) {
+                                        companyNameInput.value = companyNameDisplay.textContent;
+                                    }
+                                    if (eventTypeInput && eventTypeDisplay) {
+                                        eventTypeInput.value = eventTypeDisplay.textContent;
+                                    }
+                                }
+                            } else {
+                                adminStatus.textContent = 'Identifiants incorrects';
+                                adminStatus.className = 'admin-status error';
+                            }
+                        }, 1000);
+                    } else {
+                        adminStatus.textContent = 'Veuillez remplir tous les champs';
+                        adminStatus.className = 'admin-status error';
+                        adminStatus.classList.remove('hidden');
+                    }
+                });
+            }
+
+            // Gestion de la sauvegarde de la configuration
+            const saveConfigButton = document.getElementById('save-config');
+            if (saveConfigButton) {
+                saveConfigButton.addEventListener('click', function () {
+                    const companyNameInput = document.getElementById('company-name-input');
+                    const eventTypeInput = document.getElementById('event-type-input');
+                    const configStatus = document.getElementById('config-status');
+
+                    if (companyNameInput && eventTypeInput) {
+                        const companyName = companyNameInput.value.trim();
+                        const eventType = eventTypeInput.value.trim();
+
+                        if (companyName && eventType) {
+                            // Mettre à jour l'affichage
+                            const companyNameDisplay = document.getElementById('company-name');
+                            const eventTypeDisplay = document.getElementById('event-type');
+
+                            if (companyNameDisplay) {
+                                companyNameDisplay.textContent = companyName;
+                            }
+                            if (eventTypeDisplay) {
+                                eventTypeDisplay.textContent = eventType;
+                            }
+
+                            // Sauvegarder en localStorage (ou envoyer au serveur)
+                            localStorage.setItem('photobooth-company-name', companyName);
+                            localStorage.setItem('photobooth-event-type', eventType);
+
+                            // Afficher le statut de succès
+                            configStatus.textContent = 'Configuration sauvegardée !';
+                            configStatus.className = 'admin-status success';
+                            configStatus.classList.remove('hidden');
+
+                            // Masquer le statut après 3 secondes
+                            setTimeout(() => {
+                                configStatus.classList.add('hidden');
+                            }, 3000);
+                        } else {
+                            configStatus.textContent = 'Veuillez remplir tous les champs';
+                            configStatus.className = 'admin-status error';
+                            configStatus.classList.remove('hidden');
+                        }
+                    }
+                });
+            }
+
+            // Gestion des boutons d'action des photos
+            const newPhotoButton = document.getElementById('new-photo');
+            if (newPhotoButton) {
+                newPhotoButton.addEventListener('click', function () {
+                    // Revenir à l'interface principale
+                    const mainInterface = document.getElementById('main-interface');
+                    const resultInterface = document.getElementById('result-interface');
+
+                    if (mainInterface && resultInterface) {
+                        resultInterface.classList.add('hidden');
+                        mainInterface.classList.remove('hidden');
+                    }
+                });
+            }
+
+            const downloadPhotoButton = document.getElementById('download-photo');
+            if (downloadPhotoButton) {
+                downloadPhotoButton.addEventListener('click', function () {
+                    if (window.photoboothApp && window.photoboothApp.photoManager) {
+                        const currentPhoto = window.photoboothApp.photoManager.getCurrentPhoto();
+                        if (currentPhoto) {
+                            window.photoboothApp.photoManager.downloadPhoto(currentPhoto);
+                        }
+                    }
+                });
+            }
+
+            const printPhotoButton = document.getElementById('print-photo');
+            if (printPhotoButton) {
+                printPhotoButton.addEventListener('click', function () {
+                    const printModal = document.getElementById('print-modal');
+                    if (printModal) {
+                        printModal.classList.remove('hidden');
+                    }
+                });
+            }
+
+            const emailPhotoButton = document.getElementById('email-photo');
+            if (emailPhotoButton) {
+                emailPhotoButton.addEventListener('click', function () {
+                    const emailModal = document.getElementById('email-modal');
+                    if (emailModal) {
+                        emailModal.classList.remove('hidden');
+                    }
+                });
+            }
+
+            // Gestion des fermetures des modals
+            const closePrintButton = document.getElementById('close-print');
+            if (closePrintButton) {
+                closePrintButton.addEventListener('click', function () {
+                    const printModal = document.getElementById('print-modal');
+                    if (printModal) {
+                        printModal.classList.add('hidden');
+                    }
+                });
+            }
+
+            const closeEmailButton = document.getElementById('close-email');
+            if (closeEmailButton) {
+                closeEmailButton.addEventListener('click', function () {
+                    const emailModal = document.getElementById('email-modal');
+                    if (emailModal) {
+                        emailModal.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Mettre à jour le statut de la caméra
+            function updateCameraStatus() {
+                const cameraStatus = document.getElementById('camera-status');
+                if (cameraStatus) {
+                    if (window.photoboothApp && window.photoboothApp.cameraManager) {
+                        const isActive = window.photoboothApp.cameraManager.isCameraActive();
+                        if (isActive) {
+                            cameraStatus.className = 'kiosk-status bg-green-500';
+                            cameraStatus.querySelector('.status-text').textContent = '📹 Caméra Active';
+                        } else {
+                            cameraStatus.className = 'kiosk-status bg-red-500';
+                            cameraStatus.querySelector('.status-text').textContent = '📹 Caméra Inactive';
+                        }
+                    }
+                }
+            }
+
+            // Mettre à jour le compteur de photos
+            function updatePhotoCounter() {
+                if (window.photoboothApp && window.photoboothApp.photoManager) {
+                    const photoCount = window.photoboothApp.photoManager.getPhotoCount();
+                    const photoCountElement = document.getElementById('photo-count');
+                    const photoProgressElement = document.getElementById('photo-progress');
+
+                    if (photoCountElement) {
+                        photoCountElement.textContent = photoCount;
+                    }
+
+                    if (photoProgressElement) {
+                        const progress = Math.min((photoCount / 100) * 100, 100);
+                        photoProgressElement.style.width = progress + '%';
+                    }
+                }
+            }
+
+            // Mettre à jour les statuts toutes les 2 secondes
+            setInterval(() => {
+                updateCameraStatus();
+                updatePhotoCounter();
+            }, 2000);
+
+            // Mise à jour initiale
+            updateCameraStatus();
+            updatePhotoCounter();
+
+            // Charger la configuration au démarrage
+            function loadConfiguration() {
+                const companyName = localStorage.getItem('photobooth-company-name');
+                const eventType = localStorage.getItem('photobooth-event-type');
+
+                if (companyName) {
+                    const companyNameDisplay = document.getElementById('company-name');
+                    if (companyNameDisplay) {
+                        companyNameDisplay.textContent = companyName;
+                    }
+                }
+
+                if (eventType) {
+                    const eventTypeDisplay = document.getElementById('event-type');
+                    if (eventTypeDisplay) {
+                        eventTypeDisplay.textContent = eventType;
+                    }
+                }
+            }
+
+            loadConfiguration();
         });
     </script>
 </body>

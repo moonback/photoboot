@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Migration - Photobooth Refactorisé</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .test-result { padding: 10px; margin: 5px 0; border-radius: 5px; }
+        .test-success { background-color: #10b981; color: white; }
+        .test-error { background-color: #ef4444; color: white; }
+        .test-info { background-color: #3b82f6; color: white; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-bold text-center mb-8 text-blue-400">
+            🧪 Test de Migration - Photobooth Refactorisé
+        </h1>
+        
+        <div class="bg-gray-800 p-6 rounded-lg mb-6">
+            <h2 class="text-2xl font-semibold mb-4">📋 État de la Migration</h2>
+            <div id="migration-status" class="text-lg">
+                Vérification en cours...
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Test des Modules -->
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-xl font-semibold mb-4 text-green-400">🔧 Modules JavaScript</h3>
+                <div id="modules-test" class="space-y-2">
+                    <div class="test-result test-info">Vérification des modules...</div>
+                </div>
+            </div>
+            
+            <!-- Test de l'Application -->
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-xl font-semibold mb-4 text-blue-400">🚀 Application Principale</h3>
+                <div id="app-test" class="space-y-2">
+                    <div class="test-result test-info">Vérification de l'application...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-gray-800 p-6 rounded-lg mt-6">
+            <h3 class="text-xl font-semibold mb-4 text-purple-400">📊 Résultats Complets</h3>
+            <div id="complete-results" class="space-y-2">
+                <div class="test-result test-info">Analyse en cours...</div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-8">
+            <button onclick="runCompleteTest()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold">
+                🔄 Relancer les Tests
+            </button>
+            <a href="/" class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-semibold ml-4 inline-block">
+                🏠 Retour à l'Application
+            </a>
+        </div>
+    </div>
+
+    <!-- Scripts de test -->
+    <script src="/static/js/modules/FrameManager.js"></script>
+    <script src="/static/js/modules/CameraManager.js"></script>
+    <script src="/static/js/modules/PhotoManager.js"></script>
+    <script src="/static/js/modules/CountdownManager.js"></script>
+    <script src="/static/js/modules/InterfaceManager.js"></script>
+    <script src="/static/js/app.js"></script>
+    
+    <script>
+        // Tests de migration
+        function testModules() {
+            const modules = [
+                'FrameManager',
+                'CameraManager', 
+                'PhotoManager',
+                'CountdownManager',
+                'InterfaceManager'
+            ];
+            
+            const results = [];
+            let allSuccess = true;
+            
+            modules.forEach(moduleName => {
+                if (typeof window[moduleName] === 'function') {
+                    results.push(`<div class="test-result test-success">✅ ${moduleName} - Chargé avec succès</div>`);
+                } else {
+                    results.push(`<div class="test-result test-error">❌ ${moduleName} - NON chargé</div>`);
+                    allSuccess = false;
+                }
+            });
+            
+            document.getElementById('modules-test').innerHTML = results.join('');
+            return allSuccess;
+        }
+        
+        function testMainApp() {
+            const appElement = document.getElementById('app-test');
+            
+            if (typeof window.PhotoboothApp === 'function') {
+                appElement.innerHTML = '<div class="test-result test-success">✅ Classe PhotoboothApp disponible</div>';
+                return true;
+            } else {
+                appElement.innerHTML = '<div class="test-result test-error">❌ Classe PhotoboothApp NON disponible</div>';
+                return false;
+            }
+        }
+        
+        function runCompleteTest() {
+            console.log('🧪 Démarrage des tests de migration...');
+            
+            // Réinitialiser les résultats
+            document.getElementById('migration-status').innerHTML = 'Vérification en cours...';
+            document.getElementById('complete-results').innerHTML = '<div class="test-result test-info">Analyse en cours...</div>';
+            
+            // Tester les modules
+            const modulesOk = testModules();
+            
+            // Tester l'application
+            const appOk = testMainApp();
+            
+            // Résultats complets
+            const results = [];
+            
+            if (modulesOk && appOk) {
+                document.getElementById('migration-status').innerHTML = 
+                    '<span class="text-green-400 font-bold">🎉 MIGRATION RÉUSSIE !</span>';
+                
+                results.push('<div class="test-result test-success">✅ Tous les modules sont chargés</div>');
+                results.push('<div class="test-result test-success">✅ L\'application principale fonctionne</div>');
+                results.push('<div class="test-result test-success">✅ L\'application refactorisée est prête</div>');
+                results.push('<div class="test-result test-info">💡 Vous pouvez maintenant utiliser l\'application principale</div>');
+            } else {
+                document.getElementById('migration-status').innerHTML = 
+                    '<span class="text-red-400 font-bold">⚠️ PROBLÈMES DÉTECTÉS</span>';
+                
+                if (!modulesOk) {
+                    results.push('<div class="test-result test-error">❌ Certains modules ne sont pas chargés</div>');
+                }
+                if (!appOk) {
+                    results.push('<div class="test-result test-error">❌ L\'application principale ne fonctionne pas</div>');
+                }
+                results.push('<div class="test-result test-info">🔧 Vérifiez la console pour plus de détails</div>');
+            }
+            
+            document.getElementById('complete-results').innerHTML = results.join('');
+            
+            // Logs dans la console
+            console.log('📊 Résultats des tests:', { modulesOk, appOk });
+        }
+        
+        // Exécuter les tests au chargement
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(runCompleteTest, 1000);
+        });
+    </script>
+</body>
+</html>

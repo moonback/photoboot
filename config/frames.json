@@ -12,6 +12,19 @@
       "height": 1080,
       "created_at": "2025-08-21T17:14:29.004221",
       "created_by": "admin"
+    },
+    {
+      "id": "2b67d731-7d66-4a62-a5ab-bc3c297d5810",
+      "name": "cvb",
+      "description": "ffffff",
+      "filename": "2b67d731-7d66-4a62-a5ab-bc3c297d5810.png",
+      "position": "center",
+      "size": 100,
+      "active": false,
+      "width": 1920,
+      "height": 1080,
+      "created_at": "2025-08-21T19:47:07.761013",
+      "created_by": "admin"
     }
   ]
 }

@@ -5,8 +5,61 @@ class AdminApp {
         this.currentSection = 'dashboard';
         this.adminInfo = null;
         this.refreshInterval = null;
+        this.csrfToken = null;
 
         this.init();
+    }
+
+    // Fonction utilitaire pour échapper le HTML et prévenir les attaques XSS
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Fonction utilitaire pour valider les entrées utilisateur
+    validateInput(input, type = 'text', maxLength = 100) {
+        if (!input || typeof input !== 'string') {
+            return false;
+        }
+
+        // Vérifier la longueur
+        if (input.length > maxLength) {
+            return false;
+        }
+
+        // Validation selon le type
+        switch (type) {
+            case 'email':
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(input);
+            case 'filename':
+                const filenameRegex = /^[a-zA-Z0-9._-]+$/;
+                return filenameRegex.test(input);
+            case 'url':
+                try {
+                    new URL(input);
+                    return true;
+                } catch {
+                    return false;
+                }
+            default:
+                // Pour le texte, vérifier qu'il ne contient pas de balises HTML
+                return !/<[^>]*>/.test(input);
+        }
+    }
+
+    // Fonction sécurisée pour mettre à jour le DOM
+    safeUpdateElement(elementId, content, isHtml = false) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            if (isHtml) {
+                // Pour le HTML, échapper le contenu utilisateur
+                element.innerHTML = this.escapeHtml(content);
+            } else {
+                element.textContent = content;
+            }
+        }
     }
 
     init() {
@@ -318,7 +371,7 @@ class AdminApp {
 
             // Charger le cadre actif pour la prévisualisation
             await this.loadActiveFrame();
-            
+
         } catch (error) {
             console.error('Erreur lors du chargement des cadres:', error);
             const container = document.getElementById('frames-list');
@@ -352,7 +405,7 @@ class AdminApp {
             // Calculer la position et la taille
             const position = this.calculateFramePosition(frame);
             const size = this.calculateFrameSize(frame);
-            
+
             previewFrame.style.backgroundImage = `url(/frames/${frame.filename})`;
             previewFrame.style.backgroundSize = `${size.width}px ${size.height}px`;
             previewFrame.style.backgroundPosition = `${position.x}px ${position.y}px`;
@@ -363,12 +416,12 @@ class AdminApp {
     calculateFramePosition(frame) {
         const container = document.getElementById('frame-preview');
         if (!container) return { x: 0, y: 0 };
-        
+
         const containerWidth = container.offsetWidth;
         const containerHeight = container.offsetHeight;
-        
+
         let x, y;
-        
+
         switch (frame.position) {
             case 'top-left':
                 x = 0;
@@ -395,14 +448,14 @@ class AdminApp {
                 y = (containerHeight - (frame.height || 100)) / 2;
                 break;
         }
-        
+
         return { x, y };
     }
 
     calculateFrameSize(frame) {
         const size = frame.size || 100;
         const baseSize = 100; // Taille de base en pixels
-        
+
         return {
             width: (baseSize * size) / 100,
             height: (baseSize * size) / 100
@@ -426,7 +479,7 @@ class AdminApp {
             const response = await fetch(`/admin/frames/${frameId}/toggle`, {
                 method: 'POST'
             });
-            
+
             if (response.ok) {
                 this.showNotification('Statut du cadre mis à jour', 'success');
                 this.loadFrames(); // Recharger la liste
@@ -445,7 +498,7 @@ class AdminApp {
                 const response = await fetch(`/admin/frames/${frameId}`, {
                     method: 'DELETE'
                 });
-                
+
                 if (response.ok) {
                     this.showNotification('Cadre supprimé', 'success');
                     this.loadFrames(); // Recharger la liste
@@ -461,7 +514,7 @@ class AdminApp {
 
     async uploadFrame(event) {
         event.preventDefault();
-        
+
         const formData = new FormData();
         const name = document.getElementById('frame-name').value;
         const description = document.getElementById('frame-description').value;
@@ -469,19 +522,19 @@ class AdminApp {
         const position = document.getElementById('frame-position').value;
         const size = document.getElementById('frame-size').value;
         const active = document.getElementById('frame-active').checked;
-        
+
         if (!name || !file) {
             this.showNotification('Veuillez remplir tous les champs obligatoires', 'error');
             return;
         }
-        
+
         formData.append('name', name);
         formData.append('description', description);
         formData.append('file', file);
         formData.append('position', position);
         formData.append('size', size);
         formData.append('active', active);
-        
+
         // Ajouter les coordonnées personnalisées si nécessaire
         if (position === 'custom') {
             const x = document.getElementById('frame-x').value;
@@ -491,17 +544,17 @@ class AdminApp {
                 formData.append('y', y);
             }
         }
-        
+
         try {
             const response = await fetch('/admin/frames', {
                 method: 'POST',
                 body: formData
             });
-            
+
             if (response.ok) {
                 this.showNotification('Cadre ajouté avec succès', 'success');
                 this.loadFrames(); // Recharger la liste
-                
+
                 // Réinitialiser le formulaire
                 event.target.reset();
                 document.getElementById('custom-position-inputs').classList.add('hidden');
@@ -977,8 +1030,8 @@ class AdminApp {
         // Créer une notification temporaire
         const notification = document.createElement('div');
         notification.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 transition-all duration-300 ${type === 'success' ? 'bg-green-600' :
-                type === 'error' ? 'bg-red-600' :
-                    type === 'warning' ? 'bg-yellow-600' : 'bg-blue-600'
+            type === 'error' ? 'bg-red-600' :
+                type === 'warning' ? 'bg-yellow-600' : 'bg-blue-600'
             }`;
         notification.textContent = message;
 
@@ -1043,7 +1096,7 @@ class AdminApp {
 
         photosContainer.innerHTML = photosHTML;
     }
-    
+
     viewPhoto(filename) {
         // Ouvrir la photo dans un nouvel onglet
         window.open(`/uploads/${encodeURIComponent(filename)}`, '_blank');
