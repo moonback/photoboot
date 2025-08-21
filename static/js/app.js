@@ -217,10 +217,10 @@ class PhotoboothApp {
 
     async applyActiveFrame() {
         try {
-            // Récupérer le cadre actif
-            const response = await fetch('/admin/frames/active');
+            // Récupérer le cadre actif via l'endpoint public
+            const response = await fetch('/admin/frames/public/active');
             if (!response.ok) {
-                console.log('Aucun cadre actif trouvé');
+                console.log('Erreur lors de la récupération du cadre actif:', response.status);
                 return;
             }
 
@@ -239,62 +239,77 @@ class PhotoboothApp {
 
             // Créer une image à partir du blob capturé
             const img = new Image();
-            img.onload = () => {
-                // Définir la taille du canvas
-                tempCanvas.width = img.width;
-                tempCanvas.height = img.height;
 
-                // Dessiner la photo originale
-                tempCtx.drawImage(img, 0, 0);
+            // Attendre que l'image soit chargée
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = reject;
+                img.src = URL.createObjectURL(this.capturedImage);
+            });
 
-                // Charger et appliquer le cadre
-                const frameImg = new Image();
-                frameImg.onload = () => {
-                    // Calculer la position et la taille du cadre
-                    const position = this.calculateFramePosition(frame, img.width, img.height);
-                    const size = this.calculateFrameSize(frame, img.width, img.height);
+            // Définir la taille du canvas
+            tempCanvas.width = img.width;
+            tempCanvas.height = img.height;
 
-                    console.log('=== DÉBOGAGE CADRE ===');
-                    console.log('Dimensions de la photo:', img.width, 'x', img.height);
-                    console.log('Dimensions du cadre original:', frame.width, 'x', frame.height);
-                    console.log('Taille demandée:', frame.size + '%');
-                    console.log('Position calculée:', position);
-                    console.log('Taille calculée:', size);
-                    console.log('Position du cadre:', frame.position);
-                    console.log('========================');
+            // Dessiner la photo originale
+            tempCtx.drawImage(img, 0, 0);
 
-                    // IMPORTANT : Utiliser la composition pour préserver la transparence
-                    // Sauvegarder le contexte actuel
-                    tempCtx.save();
+            // Charger et appliquer le cadre
+            const frameImg = new Image();
 
-                    // Définir le mode de composition pour préserver la transparence
-                    tempCtx.globalCompositeOperation = 'source-over';
-
-                    // S'assurer que le cadre couvre toute la photo pour un rendu bord à bord
-                    if (frame.size >= 100) {
-                        // Mode bord à bord : le cadre couvre exactement la photo
-                        tempCtx.drawImage(frameImg, 0, 0, img.width, img.height);
-                    } else {
-                        // Mode redimensionné : positionner le cadre selon la configuration
-                        tempCtx.drawImage(frameImg, position.x, position.y, size.width, size.height);
-                    }
-
-                    // Restaurer le contexte
-                    tempCtx.restore();
-
-                    // Convertir le résultat en blob avec PNG pour préserver la transparence
-                    tempCanvas.toBlob((blob) => {
-                        if (blob) {
-                            this.capturedImage = blob;
-                            console.log('Cadre appliqué avec succès en PNG');
-                        }
-                    }, 'image/png', 1.0); // Utiliser PNG pour préserver la transparence
-                };
-
+            // Attendre que le cadre soit chargé
+            await new Promise((resolve, reject) => {
+                frameImg.onload = resolve;
+                frameImg.onerror = reject;
                 frameImg.src = `/frames/${frame.filename}`;
-            };
+            });
 
-            img.src = URL.createObjectURL(this.capturedImage);
+            // Calculer la position et la taille du cadre
+            const position = this.calculateFramePosition(frame, img.width, img.height);
+            const size = this.calculateFrameSize(frame, img.width, img.height);
+
+            console.log('=== DÉBOGAGE CADRE ===');
+            console.log('Dimensions de la photo:', img.width, 'x', img.height);
+            console.log('Dimensions du cadre original:', frame.width, 'x', frame.height);
+            console.log('Taille demandée:', frame.size + '%');
+            console.log('Position calculée:', position);
+            console.log('Taille calculée:', size);
+            console.log('Position du cadre:', frame.position);
+            console.log('========================');
+
+            // IMPORTANT : Utiliser la composition pour préserver la transparence
+            // Sauvegarder le contexte actuel
+            tempCtx.save();
+
+            // Définir le mode de composition pour préserver la transparence
+            tempCtx.globalCompositeOperation = 'source-over';
+
+            // S'assurer que le cadre couvre toute la photo pour un rendu bord à bord
+            if (frame.size >= 100) {
+                // Mode bord à bord : le cadre couvre exactement la photo
+                tempCtx.drawImage(frameImg, 0, 0, img.width, img.height);
+            } else {
+                // Mode redimensionné : positionner le cadre selon la configuration
+                tempCtx.drawImage(frameImg, position.x, position.y, size.width, size.height);
+            }
+
+            // Restaurer le contexte
+            tempCtx.restore();
+
+            // Convertir le résultat en blob avec PNG pour préserver la transparence
+            const newBlob = await new Promise((resolve, reject) => {
+                tempCanvas.toBlob((blob) => {
+                    if (blob) {
+                        resolve(blob);
+                    } else {
+                        reject(new Error('Échec de la conversion en blob'));
+                    }
+                }, 'image/png', 1.0); // Utiliser PNG pour préserver la transparence
+            });
+
+            // Mettre à jour l'image capturée avec le cadre appliqué
+            this.capturedImage = newBlob;
+            console.log('✅ Cadre appliqué avec succès en PNG');
 
         } catch (error) {
             console.error('Erreur lors de l\'application du cadre:', error);

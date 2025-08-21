@@ -271,3 +271,21 @@ async def get_frame_file(filename: str):
     except Exception as e:
         logger.error(f"Erreur lors de la récupération du fichier {filename}: {e}")
         raise HTTPException(status_code=500, detail="Erreur lors de la récupération du fichier")
+
+
+# Endpoint public pour récupérer le cadre actif (sans authentification)
+@router.get("/public/active")
+async def get_public_active_frame():
+    """Récupère le cadre actif pour l'application photobooth (sans authentification)"""
+    try:
+        config = load_frames_config()
+        active_frame = next((frame for frame in config["frames"] if frame.get("active", False)), None)
+        
+        if not active_frame:
+            return {"frame": None, "message": "Aucun cadre actif"}
+        
+        return {"frame": active_frame}
+        
+    except Exception as e:
+        logger.error(f"Erreur lors de la récupération du cadre actif public: {e}")
+        return {"frame": None, "error": "Erreur lors de la récupération du cadre"}
