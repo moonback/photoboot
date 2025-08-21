@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Version Refactorisée - Photobooth</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .module-section {
+            background: #333;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .module-title {
+            color: #3b82f6;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        
+        .test-button:hover {
+            background: #0056b3;
+        }
+        
+        .test-button.success {
+            background: #28a745;
+        }
+        
+        .test-button.danger {
+            background: #dc3545;
+        }
+        
+        .status-display {
+            background: #000;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        
+        .log-info { background: rgba(59, 130, 246, 0.2); }
+        .log-success { background: rgba(40, 167, 69, 0.2); }
+        .log-error { background: rgba(220, 53, 69, 0.2); }
+        .log-warning { background: rgba(255, 193, 7, 0.2); }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Test Version Refactorisée - Photobooth</h1>
+        <p>Cette page teste la nouvelle architecture modulaire du photobooth.</p>
+
+        <!-- Test FrameManager -->
+        <div class="module-section">
+            <h2 class="module-title">🖼️ FrameManager</h2>
+            <p>Gestion des cadres et application sur les photos</p>
+            <button class="test-button" onclick="testFrameManager()">Tester FrameManager</button>
+            <button class="test-button" onclick="testFrameCache()">Tester Cache</button>
+            <button class="test-button danger" onclick="clearFrameCache()">Vider Cache</button>
+            <div id="frame-status" class="status-display">
+                <div class="log-entry log-info">En attente de test...</div>
+            </div>
+        </div>
+
+        <!-- Test CameraManager -->
+        <div class="module-section">
+            <h2 class="module-title">📹 CameraManager</h2>
+            <p>Gestion de la caméra et capture vidéo</p>
+            <button class="test-button" onclick="testCameraManager()">Tester CameraManager</button>
+            <button class="test-button" onclick="getCameraStatus()">Statut Caméra</button>
+            <button class="test-button" onclick="getAvailableCameras()">Caméras Disponibles</button>
+            <div id="camera-status" class="status-display">
+                <div class="log-entry log-info">En attente de test...</div>
+            </div>
+        </div>
+
+        <!-- Test PhotoManager -->
+        <div class="module-section">
+            <h2 class="module-title">📸 PhotoManager</h2>
+            <p>Gestion des photos et historique</p>
+            <button class="test-button" onclick="testPhotoManager()">Tester PhotoManager</button>
+            <button class="test-button" onclick="getPhotoStats()">Statistiques Photos</button>
+            <button class="test-button" onclick="exportPhotoHistory()">Exporter Historique</button>
+            <button class="test-button danger" onclick="clearPhotoHistory()">Vider Historique</button>
+            <div id="photo-status" class="status-display">
+                <div class="log-entry log-info">En attente de test...</div>
+            </div>
+        </div>
+
+        <!-- Test CountdownManager -->
+        <div class="module-section">
+            <h2 class="module-title">⏰ CountdownManager</h2>
+            <p>Gestion du compte à rebours</p>
+            <button class="test-button" onclick="testCountdown()">Démarrer Compte à Rebours</button>
+            <button class="test-button" onclick="pauseCountdown()">Pause</button>
+            <button class="test-button" onclick="resumeCountdown()">Reprendre</button>
+            <button class="test-button danger" onclick="stopCountdown()">Arrêter</button>
+            <button class="test-button" onclick="getCountdownStatus()">Statut</button>
+            <div id="countdown-status" class="status-display">
+                <div class="log-entry log-info">En attente de test...</div>
+            </div>
+        </div>
+
+        <!-- Test InterfaceManager -->
+        <div class="module-section">
+            <h2 class="module-title">🖥️ InterfaceManager</h2>
+            <p>Gestion des interfaces utilisateur</p>
+            <button class="test-button" onclick="testInterfaceManager()">Tester InterfaceManager</button>
+            <button class="test-button" onclick="getInterfaceStatus()">Statut Interfaces</button>
+            <button class="test-button" onclick="addTestInterface()">Ajouter Interface Test</button>
+            <button class="test-button danger" onclick="removeTestInterface()">Supprimer Interface Test</button>
+            <div id="interface-status" class="status-display">
+                <div class="log-entry log-info">En attente de test...</div>
+            </div>
+        </div>
+
+        <!-- Test Application Complète -->
+        <div class="module-section">
+            <h2 class="module-title">🚀 Application Complète</h2>
+            <p>Test de l'application complète</p>
+            <button class="test-button" onclick="testCompleteApp()">Tester Application</button>
+            <button class="test-button" onclick="getAppStatus()">Statut Application</button>
+            <button class="test-button" onclick="resetApp()">Réinitialiser</button>
+            <div id="app-status" class="status-display">
+                <div class="log-entry log-info">En attente de test...</div>
+            </div>
+        </div>
+
+        <!-- Logs Généraux -->
+        <div class="module-section">
+            <h2 class="module-title">📝 Logs Généraux</h2>
+            <button class="test-button" onclick="clearLogs()">Effacer Logs</button>
+            <div id="general-logs" class="status-display">
+                <div class="log-entry log-info">Système de logs initialisé</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chargement des modules -->
+    <script src="/static/js/modules/FrameManager.js"></script>
+    <script src="/static/js/modules/CameraManager.js"></script>
+    <script src="/static/js/modules/PhotoManager.js"></script>
+    <script src="/static/js/modules/CountdownManager.js"></script>
+    <script src="/static/js/modules/InterfaceManager.js"></script>
+    <script src="/static/js/app-refactored.js"></script>
+
+    <script>
+        // Variables globales pour les tests
+        let frameManager, cameraManager, photoManager, countdownManager, interfaceManager, photoboothApp;
+
+        // Fonction utilitaire pour ajouter des logs
+        function addLog(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            container.appendChild(logEntry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Test FrameManager
+        async function testFrameManager() {
+            try {
+                frameManager = new FrameManager();
+                addLog('frame-status', 'FrameManager créé', 'success');
+                
+                const activeFrame = await frameManager.getActiveFrame();
+                if (activeFrame) {
+                    addLog('frame-status', `Cadre actif: ${activeFrame.name}`, 'success');
+                } else {
+                    addLog('frame-status', 'Aucun cadre actif trouvé', 'warning');
+                }
+            } catch (error) {
+                addLog('frame-status', `Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        function testFrameCache() {
+            if (frameManager) {
+                const hasFrame = frameManager.hasActiveFrame();
+                addLog('frame-status', `Cadre actif: ${hasFrame}`, 'info');
+            } else {
+                addLog('frame-status', 'FrameManager non initialisé', 'error');
+            }
+        }
+
+        function clearFrameCache() {
+            if (frameManager) {
+                frameManager.clearCache();
+                addLog('frame-status', 'Cache des cadres vidé', 'success');
+            }
+        }
+
+        // Test CameraManager
+        function testCameraManager() {
+            try {
+                cameraManager = new CameraManager();
+                addLog('camera-status', 'CameraManager créé', 'success');
+                
+                const status = cameraManager.getStatus();
+                addLog('camera-status', `Statut: ${JSON.stringify(status)}`, 'info');
+            } catch (error) {
+                addLog('camera-status', `Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        function getCameraStatus() {
+            if (cameraManager) {
+                const status = cameraManager.getStatus();
+                addLog('camera-status', `Statut caméra: ${JSON.stringify(status)}`, 'info');
+            }
+        }
+
+        async function getAvailableCameras() {
+            if (cameraManager) {
+                try {
+                    const cameras = await cameraManager.getAvailableCameras();
+                    addLog('camera-status', `Caméras disponibles: ${cameras.length}`, 'info');
+                    cameras.forEach(cam => {
+                        addLog('camera-status', `- ${cam.label || 'Caméra sans nom'}`, 'info');
+                    });
+                } catch (error) {
+                    addLog('camera-status', `Erreur: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // Test PhotoManager
+        function testPhotoManager() {
+            try {
+                photoManager = new PhotoManager();
+                addLog('photo-status', 'PhotoManager créé', 'success');
+                
+                const stats = photoManager.getPhotoStats();
+                addLog('photo-status', `Statistiques: ${JSON.stringify(stats)}`, 'info');
+            } catch (error) {
+                addLog('photo-status', `Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        function getPhotoStats() {
+            if (photoManager) {
+                const stats = photoManager.getPhotoStats();
+                addLog('photo-status', `Statistiques photos: ${JSON.stringify(stats)}`, 'info');
+            }
+        }
+
+        function exportPhotoHistory() {
+            if (photoManager) {
+                try {
+                    photoManager.exportHistory();
+                    addLog('photo-status', 'Historique exporté', 'success');
+                } catch (error) {
+                    addLog('photo-status', `Erreur export: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        function clearPhotoHistory() {
+            if (photoManager) {
+                photoManager.clearHistory();
+                addLog('photo-status', 'Historique vidé', 'success');
+            }
+        }
+
+        // Test CountdownManager
+        function testCountdown() {
+            try {
+                countdownManager = new CountdownManager();
+                countdownManager.init(document.createElement('div'));
+                countdownManager.startCountdown(5);
+                addLog('countdown-status', 'Compte à rebours démarré (5 secondes)', 'success');
+            } catch (error) {
+                addLog('countdown-status', `Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        function pauseCountdown() {
+            if (countdownManager) {
+                countdownManager.pauseCountdown();
+                addLog('countdown-status', 'Compte à rebours mis en pause', 'info');
+            }
+        }
+
+        function resumeCountdown() {
+            if (countdownManager) {
+                countdownManager.resumeCountdown();
+                addLog('countdown-status', 'Compte à rebours repris', 'info');
+            }
+        }
+
+        function stopCountdown() {
+            if (countdownManager) {
+                countdownManager.stopCountdown();
+                addLog('countdown-status', 'Compte à rebours arrêté', 'success');
+            }
+        }
+
+        function getCountdownStatus() {
+            if (countdownManager) {
+                const status = countdownManager.getStatus();
+                addLog('countdown-status', `Statut: ${JSON.stringify(status)}`, 'info');
+            }
+        }
+
+        // Test InterfaceManager
+        function testInterfaceManager() {
+            try {
+                interfaceManager = new InterfaceManager();
+                addLog('interface-status', 'InterfaceManager créé', 'success');
+                
+                const interfaces = interfaceManager.getAvailableInterfaces();
+                addLog('interface-status', `Interfaces disponibles: ${interfaces.join(', ')}`, 'info');
+            } catch (error) {
+                addLog('interface-status', `Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        function getInterfaceStatus() {
+            if (interfaceManager) {
+                const status = interfaceManager.getInterfaceStatus();
+                addLog('interface-status', `Statut interfaces: ${JSON.stringify(status)}`, 'info');
+            }
+        }
+
+        function addTestInterface() {
+            if (interfaceManager) {
+                const success = interfaceManager.addInterface('test', 'test-interface');
+                if (success) {
+                    addLog('interface-status', 'Interface test ajoutée', 'success');
+                } else {
+                    addLog('interface-status', 'Échec ajout interface test', 'error');
+                }
+            }
+        }
+
+        function removeTestInterface() {
+            if (interfaceManager) {
+                const success = interfaceManager.removeInterface('test');
+                if (success) {
+                    addLog('interface-status', 'Interface test supprimée', 'success');
+                } else {
+                    addLog('interface-status', 'Échec suppression interface test', 'error');
+                }
+            }
+        }
+
+        // Test Application Complète
+        function testCompleteApp() {
+            try {
+                if (window.photoboothApp) {
+                    photoboothApp = window.photoboothApp;
+                    addLog('app-status', 'Application Photobooth trouvée', 'success');
+                    
+                    const status = photoboothApp.getApplicationStatus();
+                    addLog('app-status', `Statut application: ${JSON.stringify(status)}`, 'info');
+                } else {
+                    addLog('app-status', 'Application Photobooth non trouvée', 'error');
+                }
+            } catch (error) {
+                addLog('app-status', `Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        function getAppStatus() {
+            if (photoboothApp) {
+                const status = photoboothApp.getApplicationStatus();
+                addLog('app-status', `Statut complet: ${JSON.stringify(status)}`, 'info');
+            }
+        }
+
+        function resetApp() {
+            if (photoboothApp) {
+                photoboothApp.reset();
+                addLog('app-status', 'Application réinitialisée', 'success');
+            }
+        }
+
+        // Fonction utilitaire
+        function clearLogs() {
+            const containers = ['frame-status', 'camera-status', 'photo-status', 'countdown-status', 'interface-status', 'app-status'];
+            containers.forEach(containerId => {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = '<div class="log-entry log-info">Logs effacés</div>';
+                }
+            });
+            addLog('general-logs', 'Tous les logs ont été effacés', 'success');
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            addLog('general-logs', 'Page de test chargée', 'success');
+            addLog('general-logs', 'Tous les modules sont prêts pour les tests', 'info');
+        });
+    </script>
+</body>
+</html>
