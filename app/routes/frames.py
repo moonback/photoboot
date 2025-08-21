@@ -118,6 +118,7 @@ async def get_frame(frame_id: str, request: Request, current_admin: dict = Depen
 
 @router.post("/")
 async def create_frame(
+    request: Request,
     name: str = Form(...),
     description: str = Form(""),
     file: UploadFile = File(...),
@@ -126,7 +127,6 @@ async def create_frame(
     active: bool = Form(False),
     x: Optional[int] = Form(None),
     y: Optional[int] = Form(None),
-    request: Request,
     current_admin: dict = Depends(get_current_admin)
 ):
     """Crée un nouveau cadre"""
