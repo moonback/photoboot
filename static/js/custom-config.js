@@ -4,7 +4,7 @@
 // Modifiez les valeurs ci-dessous pour personnaliser votre application
 
 // Nom de votre application (sera affiché partout)
-const CUSTOM_APP_NAME = "Photo Studio Esil";
+const CUSTOM_APP_NAME = "PhotoBooth Esil";
 
 // Version de votre application
 const CUSTOM_APP_VERSION = "1.0.0";
