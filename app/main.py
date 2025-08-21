@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 from .config import config_manager
-from .routes import health, config_api, auth
+from .routes import health, config_api, auth, admin, upload
 from .admin.auth import admin_auth
 
 
@@ -109,6 +109,8 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.include_router(health.router)
 app.include_router(config_api.router)
 app.include_router(auth.router)
+app.include_router(admin.router)
+app.include_router(upload.router)
 
 
 # Route racine - page d'accueil
@@ -173,6 +175,68 @@ async def root():
         raise HTTPException(status_code=500, detail="Erreur lors du chargement de la page d'accueil")
 
 
+# Route d'administration - page d'administration
+@app.get("/admin", response_class=HTMLResponse)
+async def admin_page():
+    """Page d'administration du photobooth"""
+    try:
+        # Lire le fichier HTML d'administration
+        html_file = Path("static/admin.html")
+        if html_file.exists():
+            with open(html_file, "r", encoding="utf-8") as f:
+                content = f.read()
+            return HTMLResponse(content=content)
+        else:
+            # Page HTML de fallback
+            return HTMLResponse(content="""
+            <!DOCTYPE html>
+            <html lang="fr">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Administration - Photobooth</title>
+                <style>
+                    body { 
+                        margin: 0; 
+                        padding: 20px; 
+                        font-family: Arial, sans-serif; 
+                        background: #1a1a1a; 
+                        color: white; 
+                        text-align: center;
+                    }
+                    .container { 
+                        max-width: 600px; 
+                        margin: 100px auto; 
+                    }
+                    h1 { color: #00ff88; }
+                    .status { 
+                        background: #333; 
+                        padding: 20px; 
+                        border-radius: 10px; 
+                        margin: 20px 0; 
+                    }
+                    .error { color: #ff4444; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>⚙️ Administration Photobooth</h1>
+                    <div class="status">
+                        <h2>Page d'administration non trouvée</h2>
+                        <p>Le fichier admin.html n'existe pas dans le dossier static/</p>
+                    </div>
+                    <div class="error">
+                        <p>Veuillez vérifier l'installation de l'application</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """)
+    except Exception as e:
+        logger.error(f"Erreur lors de la lecture de la page d'administration: {e}")
+        raise HTTPException(status_code=500, detail="Erreur lors du chargement de la page d'administration")
+
+
 # Montage des fichiers statiques
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -219,6 +283,44 @@ async def status():
             "error": str(e),
             "timestamp": time.time()
         }
+
+
+# Route pour servir les photos uploadées
+@app.get("/uploads/{filename}")
+async def serve_uploaded_file(filename: str):
+    """Sert les fichiers uploadés (photos)"""
+    try:
+        file_path = Path("uploads") / filename
+        
+        # Vérifier que le fichier existe et est dans le dossier uploads
+        if not file_path.exists() or not file_path.is_file():
+            raise HTTPException(status_code=404, detail="Fichier non trouvé")
+        
+        # Vérifier que le fichier est bien dans le dossier uploads (sécurité)
+        if not str(file_path.resolve()).startswith(str(Path("uploads").resolve())):
+            raise HTTPException(status_code=400, detail="Chemin de fichier invalide")
+        
+        # Déterminer le type MIME
+        content_type = "image/jpeg"  # Par défaut
+        if filename.lower().endswith('.png'):
+            content_type = "image/png"
+        elif filename.lower().endswith('.gif'):
+            content_type = "image/gif"
+        elif filename.lower().endswith('.bmp'):
+            content_type = "image/bmp"
+        
+        # Retourner le fichier
+        return FileResponse(
+            file_path,
+            media_type=content_type,
+            filename=filename
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erreur lors de la lecture du fichier {filename}: {e}")
+        raise HTTPException(status_code=500, detail="Erreur lors de la lecture du fichier")
 
 
 if __name__ == "__main__":

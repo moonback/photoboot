@@ -188,7 +188,7 @@ class PhotoboothApp {
         }
     }
     
-    processCapturedPhoto() {
+    async processCapturedPhoto() {
         // Arrêter la caméra
         this.stopCamera();
         
@@ -202,11 +202,48 @@ class PhotoboothApp {
             resultImage.src = URL.createObjectURL(this.capturedImage);
         }
         
+        // Sauvegarder la photo sur le serveur
+        await this.savePhotoToServer();
+        
         // Basculer vers l'interface de résultat
         this.showInterface('result');
         
         this.isCapturing = false;
-        this.updateStatus('Photo capturée avec succès !');
+        this.updateStatus('Photo capturée et sauvegardée avec succès !');
+    }
+
+    async savePhotoToServer() {
+        if (!this.capturedImage) {
+            console.error('Aucune image à sauvegarder');
+            return;
+        }
+
+        try {
+            this.updateStatus('Sauvegarde de la photo...');
+            
+            // Créer un FormData avec l'image
+            const formData = new FormData();
+            formData.append('photo', this.capturedImage, `photobooth_${Date.now()}.jpg`);
+            
+            // Envoyer la photo au serveur
+            const response = await fetch('/upload/photo', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Photo sauvegardée:', result);
+                this.updateStatus('Photo sauvegardée avec succès !');
+            } else {
+                console.error('Erreur lors de la sauvegarde:', response.status);
+                this.updateStatus('Erreur lors de la sauvegarde de la photo');
+            }
+            
+        } catch (error) {
+            console.error('Erreur lors de la sauvegarde de la photo:', error);
+            this.updateStatus('Erreur lors de la sauvegarde de la photo');
+        }
     }
     
     stopCamera() {
@@ -326,8 +363,12 @@ class PhotoboothApp {
             const result = await response.json();
             
             if (result.success) {
-                this.showAdminStatus('Connexion réussie !', 'success');
-                setTimeout(() => this.hideAdminModal(), 1500);
+                this.showAdminStatus('Connexion réussie ! Redirection...', 'success');
+                setTimeout(() => {
+                    this.hideAdminModal();
+                    // Rediriger vers la page d'administration
+                    window.location.href = '/admin';
+                }, 1500);
             } else {
                 this.showAdminStatus(result.message || 'Échec de la connexion', 'error');
             }

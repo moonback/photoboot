@@ -215,6 +215,16 @@ class AdminAuth:
     def get_active_sessions_count(self) -> int:
         """Retourne le nombre de sessions actives"""
         return len(self.active_sessions)
+    
+    def get_authorization(self) -> Optional[str]:
+        """Récupère l'autorisation depuis la requête (pour FastAPI Depends)"""
+        # Cette méthode sera utilisée par FastAPI pour injecter l'autorisation
+        return None
+    
+    def get_session_token(self) -> Optional[str]:
+        """Récupère le token de session depuis les cookies (pour FastAPI Depends)"""
+        # Cette méthode sera utilisée par FastAPI pour injecter le token de session
+        return None
 
 
 # Instance globale du gestionnaire d'authentification

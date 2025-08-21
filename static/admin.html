@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Photobooth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .admin-sidebar {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+        }
+        .admin-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        }
+        .stat-card.warning {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+        }
+        .stat-card.danger {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Barre de navigation -->
+    <nav class="bg-gray-800 border-b border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-blue-400">📸 Photobooth Admin</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="admin-username" class="text-gray-300"></span>
+                    <button id="logout-btn" class="bg-red-600 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        🚪 Déconnexion
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="admin-sidebar w-64 min-h-screen p-4">
+            <nav class="space-y-2">
+                <button class="nav-item active" data-section="dashboard">
+                    📊 Tableau de bord
+                </button>
+                <button class="nav-item" data-section="photos">
+                    📸 Gestion des photos
+                </button>
+                <button class="nav-item" data-section="system">
+                    ⚙️ Configuration système
+                </button>
+                <button class="nav-item" data-section="users">
+                    👥 Sessions utilisateurs
+                </button>
+                <button class="nav-item" data-section="logs">
+                    📝 Logs système
+                </button>
+            </nav>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 p-8">
+            <!-- Section Tableau de bord -->
+            <div id="dashboard-section" class="admin-section">
+                <h2 class="text-3xl font-bold mb-8 text-blue-400">Tableau de bord</h2>
+                
+                <!-- Statistiques -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card p-6 rounded-lg text-white">
+                        <div class="flex items-center">
+                            <div class="flex-1">
+                                <p class="text-sm opacity-90">Photos prises</p>
+                                <p class="text-3xl font-bold" id="total-photos">-</p>
+                            </div>
+                            <div class="text-4xl">📸</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card p-6 rounded-lg text-white">
+                        <div class="flex items-center">
+                            <div class="flex-1">
+                                <p class="text-sm opacity-90">Sessions actives</p>
+                                <p class="text-3xl font-bold" id="active-sessions">-</p>
+                            </div>
+                            <div class="text-4xl">👥</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card p-6 rounded-lg text-white">
+                        <div class="flex items-center">
+                            <div class="flex-1">
+                                <p class="text-sm opacity-90">Espace disque</p>
+                                <p class="text-3xl font-bold" id="disk-usage">-</p>
+                            </div>
+                            <div class="text-4xl">💾</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card p-6 rounded-lg text-white">
+                        <div class="flex items-center">
+                            <div class="flex-1">
+                                <p class="text-sm opacity-90">Statut système</p>
+                                <p class="text-3xl font-bold" id="system-status">-</p>
+                            </div>
+                            <div class="text-4xl">🟢</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions rapides -->
+                <div class="admin-card p-6 rounded-lg mb-8">
+                    <h3 class="text-xl font-semibold mb-4">Actions rapides</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button class="action-btn bg-blue-600 hover:bg-blue-700" id="restart-system">
+                            🔄 Redémarrer
+                        </button>
+                        <button class="action-btn bg-green-600 hover:bg-green-700" id="backup-system">
+                            💾 Sauvegarde
+                        </button>
+                        <button class="action-btn bg-yellow-600 hover:bg-yellow-700" id="clear-cache">
+                            🗑️ Cache
+                        </button>
+                        <button class="action-btn bg-purple-600 hover:bg-purple-700" id="export-logs">
+                            📤 Logs
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Activité récente -->
+                <div class="admin-card p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-4">Activité récente</h3>
+                    <div id="recent-activity" class="space-y-3">
+                        <div class="text-gray-400 text-center py-8">
+                            Chargement de l'activité...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Gestion des photos -->
+            <div id="photos-section" class="admin-section hidden">
+                <h2 class="text-3xl font-bold mb-8 text-blue-400">Gestion des photos</h2>
+                
+                <div class="admin-card p-6 rounded-lg mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">Photos stockées</h3>
+                        <div class="flex space-x-2">
+                            <input type="text" id="photo-search" placeholder="Rechercher..." class="admin-input">
+                            <button class="action-btn bg-blue-600 hover:bg-blue-700" id="refresh-photos">
+                                🔄 Actualiser
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="photos-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <div class="text-gray-400 text-center py-8">
+                            Chargement des photos...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Configuration système -->
+            <div id="system-section" class="admin-section hidden">
+                <h2 class="text-3xl font-bold mb-8 text-blue-400">Configuration système</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="admin-card p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-4">Paramètres généraux</h3>
+                        <form id="system-config-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Nom de l'application</label>
+                                <input type="text" id="app-name" class="admin-input" placeholder="Photobooth">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Version</label>
+                                <input type="text" id="app-version" class="admin-input" placeholder="1.0.0">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Mode debug</label>
+                                <select id="debug-mode" class="admin-input">
+                                    <option value="true">Activé</option>
+                                    <option value="false">Désactivé</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="action-btn bg-green-600 hover:bg-green-700 w-full">
+                                💾 Sauvegarder
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="admin-card p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-4">Paramètres de sécurité</h3>
+                        <form id="security-config-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Timeout de session (secondes)</label>
+                                <input type="number" id="session-timeout" class="admin-input" placeholder="3600">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Rounds bcrypt</label>
+                                <input type="number" id="bcrypt-rounds" class="admin-input" placeholder="12">
+                            </div>
+                            <button type="submit" class="action-btn bg-green-600 hover:bg-green-700 w-full">
+                                💾 Sauvegarder
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Sessions utilisateurs -->
+            <div id="users-section" class="admin-section hidden">
+                <h2 class="text-3xl font-bold mb-8 text-blue-400">Sessions utilisateurs</h2>
+                
+                <div class="admin-card p-6 rounded-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">Sessions actives</h3>
+                        <button class="action-btn bg-red-600 hover:bg-red-700" id="terminate-all-sessions">
+                            🚫 Toutes terminer
+                        </button>
+                    </div>
+                    
+                    <div id="sessions-list" class="space-y-3">
+                        <div class="text-gray-400 text-center py-8">
+                            Chargement des sessions...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Logs système -->
+            <div id="logs-section" class="admin-section hidden">
+                <h2 class="text-3xl font-bold mb-8 text-blue-400">Logs système</h2>
+                
+                <div class="admin-card p-6 rounded-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">Logs en temps réel</h3>
+                        <div class="flex space-x-2">
+                            <select id="log-level" class="admin-input">
+                                <option value="ALL">Tous les niveaux</option>
+                                <option value="INFO">Info</option>
+                                <option value="WARNING">Avertissement</option>
+                                <option value="ERROR">Erreur</option>
+                            </select>
+                            <button class="action-btn bg-blue-600 hover:bg-blue-700" id="clear-logs">
+                                🗑️ Effacer
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="logs-container" class="bg-gray-800 p-4 rounded-lg h-96 overflow-y-auto font-mono text-sm">
+                        <div class="text-gray-400 text-center py-8">
+                            Chargement des logs...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/admin.js"></script>
+</body>
+</html>

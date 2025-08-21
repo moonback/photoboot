@@ -175,3 +175,83 @@ async def get_config_schema():
             status_code=500,
             detail=f"Erreur lors de la génération du schéma: {str(e)}"
         )
+
+
+@router.put("/app")
+async def update_app_config(
+    app_config: Dict[str, Any],
+    current_admin: Dict[str, Any] = Depends(get_current_admin)
+):
+    """Met à jour la configuration de l'application (admin uniquement)"""
+    try:
+        if not current_admin:
+            raise HTTPException(status_code=401, detail="Authentification requise")
+        
+        logger.info(f"Mise à jour de la configuration app par l'admin: {current_admin.get('username')}")
+        
+        # Mettre à jour la configuration de l'application
+        if config_manager.config:
+            # Mettre à jour les champs de l'application
+            if 'name' in app_config:
+                config_manager.config.app.name = app_config['name']
+            if 'version' in app_config:
+                config_manager.config.app.version = app_config['version']
+            if 'debug' in app_config:
+                config_manager.config.app.debug = app_config['debug']
+            
+            # Sauvegarder la configuration
+            if config_manager.save_config(config_manager.config.model_dump()):
+                logger.info("Configuration de l'application mise à jour avec succès")
+                return {
+                    "success": True,
+                    "message": "Configuration de l'application mise à jour avec succès"
+                }
+            else:
+                raise HTTPException(status_code=500, detail="Erreur lors de la sauvegarde")
+        else:
+            raise HTTPException(status_code=500, detail="Configuration non disponible")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erreur lors de la mise à jour de la configuration app: {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la mise à jour: {str(e)}")
+
+
+@router.put("/security")
+async def update_security_config(
+    security_config: Dict[str, Any],
+    current_admin: Dict[str, Any] = Depends(get_current_admin)
+):
+    """Met à jour la configuration de sécurité (admin uniquement)"""
+    try:
+        if not current_admin:
+            raise HTTPException(status_code=401, detail="Authentification requise")
+        
+        logger.info(f"Mise à jour de la configuration sécurité par l'admin: {current_admin.get('username')}")
+        
+        # Mettre à jour la configuration de sécurité
+        if config_manager.config:
+            # Mettre à jour les champs de sécurité
+            if 'session_timeout' in security_config:
+                config_manager.config.security.session_timeout = security_config['session_timeout']
+            if 'bcrypt_rounds' in security_config:
+                config_manager.config.security.bcrypt_rounds = security_config['bcrypt_rounds']
+            
+            # Sauvegarder la configuration
+            if config_manager.save_config(config_manager.config.model_dump()):
+                logger.info("Configuration de sécurité mise à jour avec succès")
+                return {
+                    "success": True,
+                    "message": "Configuration de sécurité mise à jour avec succès"
+                }
+            else:
+                raise HTTPException(status_code=500, detail="Erreur lors de la sauvegarde")
+        else:
+            raise HTTPException(status_code=500, detail="Configuration non disponible")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erreur lors de la mise à jour de la configuration sécurité: {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la mise à jour: {str(e)}")
