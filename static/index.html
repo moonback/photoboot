@@ -6,711 +6,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photo Studio Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap');
-
-        * {
-            font-family: 'Inter', sans-serif;
-        }
-
-        .title-font {
-            font-family: 'Roboto', sans-serif;
-        }
-
-        /* Background professionnel */
-        .kiosk-bg {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .kiosk-bg::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background:
-                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
-        }
-
-        /* Grille subtile améliorée */
-        .grid-pattern {
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        /* Bouton principal kiosque - optimisé tactile */
-        .kiosk-btn {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            border: none;
-            border-radius: 24px;
-            padding: 32px 100px;
-            font-size: 32px;
-            font-weight: 800;
-            color: white;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            position: relative;
-            overflow: hidden;
-            box-shadow:
-                0 25px 50px rgba(59, 130, 246, 0.4),
-                0 0 0 2px rgba(255, 255, 255, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            min-height: 100px;
-            min-width: 300px;
-        }
-
-        .kiosk-btn:hover {
-            transform: translateY(-6px) scale(1.03);
-            box-shadow:
-                0 35px 70px rgba(59, 130, 246, 0.5),
-                0 0 0 3px rgba(255, 255, 255, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        }
-
-        .kiosk-btn:active {
-            transform: translateY(-2px) scale(0.98);
-        }
-
-        .kiosk-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.8s ease;
-        }
-
-        .kiosk-btn:hover::before {
-            left: 100%;
-        }
-
-        /* Animation pulse améliorée */
-        @keyframes kioskPulse {
-
-            0%,
-            100% {
-                box-shadow:
-                    0 25px 50px rgba(59, 130, 246, 0.4),
-                    0 0 0 2px rgba(255, 255, 255, 0.1),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            }
-
-            50% {
-                box-shadow:
-                    0 25px 50px rgba(59, 130, 246, 0.6),
-                    0 0 0 3px rgba(255, 255, 255, 0.15),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.25);
-            }
-        }
-
-        .kiosk-btn {
-            animation: kioskPulse 4s ease-in-out infinite;
-        }
-
-        /* Titre kiosque amélioré */
-        .kiosk-title {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: none;
-            font-weight: 900;
-            letter-spacing: -0.03em;
-            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
-        }
-
-        /* Indicateurs de statut kiosque - optimisés tactile */
-        .kiosk-status {
-            background: rgba(15, 23, 42, 0.9);
-            border: 2px solid rgba(148, 163, 184, 0.3);
-            border-radius: 16px;
-            padding: 20px 28px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            backdrop-filter: blur(25px);
-            transition: all 0.4s ease;
-            font-weight: 600;
-            font-size: 16px;
-            min-height: 70px;
-            min-width: 160px;
-        }
-
-        .kiosk-status:hover {
-            background: rgba(15, 23, 42, 0.95);
-            border-color: rgba(148, 163, 184, 0.5);
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .kiosk-status::before {
-            content: '';
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            animation: statusPulse 2s infinite;
-        }
-
-        .kiosk-status.bg-green-500::before {
-            background: #10b981;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
-        }
-
-        .kiosk-status.bg-red-500::before {
-            background: #ef4444;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
-        }
-
-        @keyframes statusPulse {
-
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.8;
-                transform: scale(1.2);
-            }
-        }
-
-        /* Bouton admin kiosque - optimisé tactile */
-        .kiosk-admin-btn {
-            background: rgba(15, 23, 42, 0.9);
-            border: 2px solid rgba(148, 163, 184, 0.4);
-            border-radius: 16px;
-            padding: 20px 28px;
-            color: rgba(248, 250, 252, 0.95);
-            backdrop-filter: blur(25px);
-            transition: all 0.4s ease;
-            font-size: 16px;
-            font-weight: 600;
-            min-height: 70px;
-            min-width: 200px;
-        }
-
-        .kiosk-admin-btn:hover {
-            background: rgba(30, 41, 59, 0.95);
-            border-color: rgba(148, 163, 184, 0.6);
-            color: white;
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Compteur de photos kiosque - optimisé tactile */
-        .kiosk-counter {
-            background: rgba(15, 23, 42, 0.9);
-            border: 2px solid rgba(59, 130, 246, 0.4);
-            border-radius: 20px;
-            padding: 28px;
-            backdrop-filter: blur(25px);
-            transition: all 0.4s ease;
-            min-height: 140px;
-            min-width: 180px;
-        }
-
-        .kiosk-counter:hover {
-            transform: scale(1.03);
-            border-color: rgba(59, 130, 246, 0.6);
-            background: rgba(15, 23, 42, 0.95);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Interface de capture kiosque - optimisée tactile */
-        .kiosk-capture {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            border: 3px solid rgba(59, 130, 246, 0.3);
-            border-radius: 24px;
-            padding: 40px;
-        }
-
-        /* Compteur dégressif kiosque - optimisé tactile */
-        .kiosk-countdown {
-            font-size: 140px;
-            font-weight: 900;
-            color: #3b82f6;
-            text-shadow:
-                0 0 25px rgba(59, 130, 246, 0.6),
-                0 0 50px rgba(59, 130, 246, 0.4);
-            animation: countdownPulse 1.2s ease-in-out infinite;
-        }
-
-        @keyframes countdownPulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.15);
-            }
-        }
-
-        /* Boutons de contrôle kiosque - optimisés tactile */
-        .kiosk-control-btn {
-            background: linear-gradient(135deg, #475569 0%, #64748b 100%);
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            padding: 20px 40px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            font-size: 18px;
-            backdrop-filter: blur(15px);
-            min-height: 70px;
-            min-width: 160px;
-        }
-
-        .kiosk-control-btn:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-            background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
-        }
-
-        /* Interface de résultat kiosque - optimisée tactile */
-        .kiosk-result {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            border: 3px solid rgba(16, 185, 129, 0.4);
-            border-radius: 24px;
-            padding: 40px;
-        }
-
-        /* Boutons d'action kiosque - optimisés tactile */
-        .kiosk-action-btn {
-            background: linear-gradient(135deg, #475569 0%, #64748b 100%);
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
-            padding: 24px 48px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            font-size: 20px;
-            backdrop-filter: blur(15px);
-            min-width: 220px;
-            min-height: 80px;
-        }
-
-        .kiosk-action-btn:hover {
-            transform: translateY(-4px) scale(1.03);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        .kiosk-action-btn.primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        }
-
-        .kiosk-action-btn.success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }
-
-        .kiosk-action-btn.warning {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        }
-
-        .kiosk-action-btn.info {
-            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-        }
-
-        /* Modal kiosque - optimisé tactile */
-        .kiosk-modal {
-            background: rgba(15, 23, 42, 0.98);
-            backdrop-filter: blur(40px);
-        }
-
-        .kiosk-modal-content {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            border: 2px solid rgba(148, 163, 184, 0.4);
-            border-radius: 20px;
-            box-shadow:
-                0 30px 60px rgba(0, 0, 0, 0.6),
-                0 0 0 2px rgba(255, 255, 255, 0.1);
-            padding: 2.5rem;
-            max-width: 600px;
-            width: 95%;
-        }
-
-        .kiosk-input {
-            background: rgba(15, 23, 42, 0.9);
-            border: 2px solid rgba(148, 163, 184, 0.4);
-            border-radius: 12px;
-            color: white;
-            transition: all 0.4s ease;
-            padding: 16px 20px;
-            font-size: 16px;
-            min-height: 60px;
-        }
-
-        .kiosk-input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-            background: rgba(15, 23, 42, 0.95);
-            transform: scale(1.02);
-        }
-
-        .kiosk-submit-btn {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            border-radius: 12px;
-            transition: all 0.4s ease;
-            padding: 16px 24px;
-            font-size: 16px;
-            font-weight: 600;
-            min-height: 60px;
-        }
-
-        .kiosk-submit-btn:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.5);
-        }
-
-        /* Animations d'apparition améliorées */
-        .kiosk-fade-in {
-            animation: kioskFadeIn 1s ease-out;
-        }
-
-        .kiosk-fade-in-delay {
-            animation: kioskFadeIn 1s ease-out 0.3s both;
-        }
-
-        .kiosk-fade-in-delay-2 {
-            animation: kioskFadeIn 1s ease-out 0.6s both;
-        }
-
-        @keyframes kioskFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        /* Effet glassmorphism amélioré */
-        .kiosk-glass {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow:
-                0 20px 40px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        /* Logo et icônes améliorés */
-        .kiosk-logo {
-            font-size: 120px;
-            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4));
-            animation: logoFloat 3s ease-in-out infinite;
-        }
-
-        @keyframes logoFloat {
-
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        .kiosk-icon {
-            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
-        }
-
-        /* Responsive pour écrans tactiles */
-        @media (max-width: 768px) {
-            .kiosk-btn {
-                padding: 28px 80px;
-                font-size: 28px;
-                min-height: 90px;
-                min-width: 280px;
-            }
-
-            .kiosk-status,
-            .kiosk-admin-btn {
-                padding: 18px 24px;
-                min-height: 65px;
-                font-size: 15px;
-            }
-
-            .kiosk-action-btn {
-                padding: 20px 40px;
-                font-size: 18px;
-                min-width: 200px;
-                min-height: 70px;
-            }
-
-            .kiosk-countdown {
-                font-size: 120px;
-            }
-        }
-
-        /* Effet de focus pour l'accessibilité tactile */
-        .kiosk-btn:focus,
-        .kiosk-admin-btn:focus,
-        .kiosk-action-btn:focus,
-        .kiosk-control-btn:focus {
-            outline: none;
-            box-shadow:
-                0 0 0 4px rgba(59, 130, 246, 0.3),
-                0 0 0 2px rgba(255, 255, 255, 0.5);
-        }
-
-        /* Styles pour les modals */
-        .admin-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .admin-modal.hidden {
-            display: none !important;
-        }
-
-        .admin-modal-content {
-            background: rgba(31, 41, 55, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-        }
-
-        .admin-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .admin-modal-header h3 {
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 2rem;
-            cursor: pointer;
-            padding: 0;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-
-        .admin-modal-body {
-            color: white;
-        }
-
-        .admin-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            color: white;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .admin-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .admin-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .admin-login-btn {
-            width: 100%;
-            padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
-        }
-
-        .admin-login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .admin-status {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .admin-status.success {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #10b981;
-        }
-
-        .admin-status.error {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #ef4444;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 
 <body class="kiosk-bg text-white overflow-hidden relative">
-    <!-- Grille de fond -->
+    <!-- Grille de fond animée -->
     <div class="grid-pattern"></div>
+
+    <!-- Particules flottantes -->
+    <div id="particles-container"></div>
+
+    <!-- Décorations flottantes -->
+    <div class="floating-element top-1/4 left-8 opacity-20 float-1">
+        <div class="text-6xl">✨</div>
+    </div>
+    <div class="floating-element top-1/3 right-16 opacity-20 float-2">
+        <div class="text-5xl">📸</div>
+    </div>
+    <div class="floating-element bottom-1/3 left-1/4 opacity-15 float-3">
+        <div class="text-6xl">⭐</div>
+    </div>
 
     <!-- Interface principale -->
     <div id="main-interface" class="h-screen flex flex-col items-center justify-center relative z-10">
         <!-- Logo et titre -->
-        <div class="text-center mb-24 kiosk-fade-in">
-
-            <h1 class="title-font text-9xl font-black kiosk-title mb-10">
+        <div class="text-center mb-16 kiosk-fade-in">
+            <div class="mb-6">
+                <span class="text-7xl kiosk-logo">📷</span>
+            </div>
+            <h1 class="title-font text-6xl font-black kiosk-title mb-6">
                 Photo Studio Pro
             </h1>
-            <p class="text-4xl text-slate-300 font-light tracking-wide mb-10">
+            <p class="text-xl text-slate-300 font-light tracking-wide mb-6">
                 Capturez vos moments les plus précieux
             </p>
-            <div class="w-40 h-2 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto rounded-full shadow-lg"></div>
+            <div
+                class="w-32 h-2 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 mx-auto rounded-full shadow-lg">
+            </div>
         </div>
 
-        <!-- Bouton principal -->
-        <div class="mb-20 kiosk-fade-in-delay">
-            <button id="start-button" class="kiosk-btn group">
-                <span class="relative z-10 flex items-center gap-6">
-                    <span class="text-4xl">🚀</span>
+        <!-- Bouton principal avec effet sonore -->
+        <div class="mb-12 kiosk-fade-in-delay">
+            <button id="start-button" class="kiosk-btn group relative">
+                <span class="relative z-10 flex items-center gap-4">
+                    <span class="text-2xl animate-pulse">🚀</span>
                     <span>COMMENCER</span>
                 </span>
             </button>
         </div>
 
-        <!-- Informations système -->
+        <!-- Informations système avec statuts -->
         <div
-            class="text-center text-slate-300 kiosk-fade-in-delay-2 kiosk-glass rounded-3xl p-10 backdrop-blur-lg bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-slate-700/30 shadow-2xl">
+            class="text-center kiosk-fade-in-delay-2 kiosk-glass rounded-2xl p-8 backdrop-blur-lg bg-gradient-to-br from-slate-800/60 to-slate-900/60 border-2 border-slate-700/30 shadow-2xl mb-10">
             <div class="flex flex-col items-center gap-4">
                 <p id="company-name"
-                    class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    Photo Studio Pro</p>
-                <div class="w-24 h-0.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full"></div>
-                <p id="event-type" class="text-xl text-slate-400 font-light tracking-wide">Vos moments précieux</p>
+                    class="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    Photo Studio Pro
+                </p>
+                <div class="w-24 h-1 bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30 rounded-full">
+                </div>
+                <p id="event-type" class="text-lg text-slate-400 font-light tracking-wide">Vos moments précieux</p>
             </div>
         </div>
 
+        <!-- Statuts système -->
+        <div class="flex gap-6 mb-10 kiosk-fade-in-delay-3">
+            <div id="camera-status" class="kiosk-status active">
+                <div class="status-text">📹 Caméra Active</div>
+            </div>
+            <div id="printer-status" class="kiosk-status active">
+                <div class="status-text">🖨️ Imprimante Prête</div>
+            </div>
+        </div>
 
-
-        <!-- Bouton admin (coin bas gauche) -->
-        <div class="fixed bottom-12 left-12 kiosk-fade-in">
+        <!-- Bouton admin stylé -->
+        <div class="fixed bottom-8 left-8 kiosk-fade-in">
             <button id="admin-button" class="kiosk-admin-btn">
-                <span class="flex items-center gap-4">
-                    <span class="text-2xl">⚙️</span>
+                <span class="flex items-center gap-3">
+                    <span class="text-xl">⚙️</span>
                     <span>Administration</span>
                 </span>
             </button>
         </div>
 
-        <!-- Compteur de photos amélioré -->
-        <div class="fixed bottom-12 right-12 kiosk-counter kiosk-fade-in">
+        <!-- Compteur de photos premium -->
+        <div class="fixed bottom-8 right-8 kiosk-counter kiosk-fade-in">
             <div class="text-center">
-                <div class="text-6xl font-bold text-blue-400 mb-4" id="photo-count">0</div>
-                <div class="text-lg text-slate-400 uppercase tracking-wider mb-5">Photos capturées</div>
-                <div class="w-full h-3 bg-slate-700 rounded-full shadow-inner">
-                    <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-700 ease-out"
-                        style="width: 0%" id="photo-progress"></div>
+                <div class="text-5xl font-bold text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text mb-3"
+                    id="photo-count">0</div>
+                <div class="text-lg text-slate-400 uppercase tracking-wider mb-4">Photos capturées</div>
+                <div class="w-full h-3 bg-slate-700 rounded-full shadow-inner overflow-hidden">
+                    <div class="h-full progress-bar transition-all duration-1000 ease-out" style="width: 0%"
+                        id="photo-progress"></div>
                 </div>
+                <div class="text-xs text-slate-500 mt-2">Objectif: 100 photos</div>
             </div>
-        </div>
-
-        <!-- Décorations visuelles subtiles -->
-        <div class="fixed top-1/4 left-12 opacity-15">
-            <div class="text-8xl animate-pulse">✨</div>
-        </div>
-        <div class="fixed bottom-1/4 right-20 opacity-15">
-            <div class="text-8xl animate-pulse" style="animation-delay: 1s;">⭐</div>
         </div>
     </div>
 
-    <!-- Interface de capture (cachée par défaut) -->
+    <!-- Interface de capture améliorée -->
     <div id="capture-interface" class="h-screen hidden flex flex-col items-center justify-center kiosk-capture">
-        <div class="text-center mb-16">
-            <h2 class="text-6xl font-bold text-blue-400 mb-6">Préparez-vous !</h2>
-            <p class="text-3xl text-slate-300">La photo sera prise dans</p>
+        <div class="text-center mb-10">
+            <h2
+                class="text-5xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-6">
+                Préparez-vous !
+            </h2>
+            <p class="text-2xl text-slate-300">La photo sera prise dans</p>
         </div>
 
-        <!-- Compteur dégressif -->
-        <div class="mb-16">
-            <span id="countdown-number" class="kiosk-countdown">3</span>
-        </div>
-
-        <!-- Aperçu caméra -->
-        <div class="mb-16">
-            <video id="camera-video" autoplay muted class="rounded-3xl shadow-2xl border-4 border-blue-400/30"></video>
+        <!-- Aperçu caméra avec cadre stylé -->
+        <div class="mb-10 relative">
+            <div
+                class="absolute -inset-3 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl blur-lg opacity-50">
+            </div>
+            <video id="camera-video" autoplay muted
+                class="relative rounded-2xl shadow-2xl border-3 border-white/20 backdrop-blur-sm"></video>
             <canvas id="capture-canvas" class="hidden"></canvas>
+
+            <!-- Compteur dégressif avec effet dramatique -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <span id="countdown-number" class="kiosk-countdown">3</span>
+            </div>
+
+            <!-- Indicateurs de coins pour le cadrage -->
+            <div class="absolute top-3 left-3 w-8 h-8 border-l-3 border-t-3 border-white opacity-60"></div>
+            <div class="absolute top-3 right-3 w-8 h-8 border-r-3 border-t-3 border-white opacity-60"></div>
+            <div class="absolute bottom-3 left-3 w-8 h-8 border-l-3 border-b-3 border-white opacity-60"></div>
+            <div class="absolute bottom-3 right-3 w-8 h-8 border-r-3 border-b-3 border-white opacity-60"></div>
         </div>
 
         <!-- Boutons de contrôle -->
-        <div class="flex space-x-8">
-            <button id="cancel-capture" class="kiosk-control-btn">
+        <div class="flex space-x-6">
+            <button id="cancel-capture" class="kiosk-action-btn">
                 <span class="flex items-center gap-3">
                     <span class="text-2xl">❌</span>
                     <span>Annuler</span>
                 </span>
             </button>
-            <button id="retake-photo" class="kiosk-control-btn hidden">
+            <button id="retake-photo" class="kiosk-action-btn info hidden">
                 <span class="flex items-center gap-3">
                     <span class="text-2xl">🔄</span>
                     <span>Reprendre</span>
@@ -719,41 +152,48 @@
         </div>
     </div>
 
-    <!-- Interface de résultat (cachée par défaut) -->
+    <!-- Interface de résultat premium -->
     <div id="result-interface" class="h-screen hidden flex flex-col items-center justify-center kiosk-result">
-        <div class="text-center mb-20">
-            <h2 class="text-7xl font-bold text-green-400 mb-8 animate-bounce">Photo prise !</h2>
-            <p class="text-4xl text-slate-300 italic">Votre photo est prête</p>
+        <div class="text-center mb-12">
+            <h2
+                class="text-6xl font-bold bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent mb-6">
+                Photo prise !
+            </h2>
+            <p class="text-3xl text-slate-300 italic">Votre chef-d'œuvre est prêt</p>
         </div>
 
-        <!-- Aperçu de la photo -->
-        <div
-            class="mb-20 rounded-3xl shadow-2xl overflow-hidden transform hover:scale-105 transition-transform duration-700 border-4 border-green-400/30">
-            <img id="result-image" class="max-w-5xl object-cover" alt="Photo prise">
+        <!-- Aperçu de la photo avec effets -->
+        <div class="mb-12 relative">
+            <div
+                class="absolute -inset-4 bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 rounded-2xl blur-lg opacity-40">
+            </div>
+            <img id="result-image"
+                class="relative max-w-4xl object-cover rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-700 border-3 border-green-400/30"
+                alt="Photo prise">
         </div>
 
         <!-- Boutons d'action -->
-        <div class="flex flex-wrap justify-center gap-10">
+        <div class="flex flex-wrap justify-center gap-8">
             <button id="new-photo" class="kiosk-action-btn primary">
-                <span class="flex items-center gap-4">
+                <span class="flex items-center gap-3">
                     <span class="text-2xl">📸</span>
                     <span>Nouvelle photo</span>
                 </span>
             </button>
             <button id="download-photo" class="kiosk-action-btn success">
-                <span class="flex items-center gap-4">
-                    <span class="text-2xl">💾</span>
+                <span class="flex items-center gap-3">
+                    <span class="text-3xl">💾</span>
                     <span>Télécharger</span>
                 </span>
             </button>
             <button id="print-photo" class="kiosk-action-btn warning">
-                <span class="flex items-center gap-4">
+                <span class="flex items-center gap-3">
                     <span class="text-2xl">🖨️</span>
                     <span>Imprimer</span>
                 </span>
             </button>
             <button id="email-photo" class="kiosk-action-btn info">
-                <span class="flex items-center gap-4">
+                <span class="flex items-center gap-3">
                     <span class="text-2xl">📧</span>
                     <span>Envoyer par email</span>
                 </span>
@@ -761,49 +201,51 @@
         </div>
     </div>
 
-    <!-- Modals -->
-    <div id="admin-modal" class="admin-modal kiosk-modal hidden">
-        <div class="admin-modal-content kiosk-modal-content">
-            <div class="admin-modal-header">
-                <h3 class="text-2xl font-bold">Administration</h3>
-                <button id="close-admin" class="close-btn">&times;</button>
+    <!-- Modal d'administration -->
+    <div id="admin-modal" class="kiosk-modal hidden">
+        <div class="kiosk-modal-content">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xl font-bold text-white">Administration</h3>
+                <button id="close-admin"
+                    class="text-2xl text-white hover:text-gray-300 transition-colors">&times;</button>
             </div>
-            <div class="admin-modal-body">
-                <div class="mb-6">
-                    <label class="block text-base font-medium mb-3">Nom d'utilisateur</label>
-                    <input type="text" id="admin-username" class="admin-input kiosk-input" placeholder="admin">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-white mb-2 text-sm">Nom d'utilisateur</label>
+                    <input type="text" id="admin-username" class="kiosk-input w-full" placeholder="admin">
                 </div>
-                <div class="mb-6">
-                    <label class="block text-base font-medium mb-3">Mot de passe</label>
-                    <input type="password" id="admin-password" class="admin-input kiosk-input" placeholder="••••••••">
+                <div>
+                    <label class="block text-white mb-2 text-sm">Mot de passe</label>
+                    <input type="password" id="admin-password" class="kiosk-input w-full" placeholder="••••••••">
                 </div>
-                <button id="admin-login" class="admin-login-btn kiosk-submit-btn">Se connecter</button>
-                <div id="admin-status" class="admin-status hidden"></div>
+                <button id="admin-login" class="kiosk-action-btn primary w-full">Se connecter</button>
+                <div id="admin-status" class="hidden text-center p-3 rounded-lg"></div>
             </div>
         </div>
     </div>
 
-    <!-- Modal impression -->
-    <div id="print-modal" class="admin-modal kiosk-modal hidden">
-        <div class="admin-modal-content kiosk-modal-content">
-            <div class="admin-modal-header">
-                <h3 class="text-2xl font-bold">Impression</h3>
-                <button id="close-print" class="close-btn">&times;</button>
+    <!-- Modal d'impression -->
+    <div id="print-modal" class="kiosk-modal hidden">
+        <div class="kiosk-modal-content">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xl font-bold text-white">Impression</h3>
+                <button id="close-print"
+                    class="text-2xl text-white hover:text-gray-300 transition-colors">&times;</button>
             </div>
-            <div class="admin-modal-body">
-                <div class="mb-6">
-                    <label class="block text-base font-medium mb-3">Imprimante</label>
-                    <select id="printer-select" class="admin-input kiosk-input">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-white mb-2 text-sm">Imprimante</label>
+                    <select id="printer-select" class="kiosk-input w-full">
                         <option value="">Imprimante par défaut</option>
                     </select>
                 </div>
-                <div class="mb-6">
-                    <label class="block text-base font-medium mb-3">Nombre de copies</label>
-                    <input type="number" id="print-copies" class="admin-input kiosk-input" value="1" min="1" max="10">
+                <div>
+                    <label class="block text-white mb-2 text-sm">Nombre de copies</label>
+                    <input type="number" id="print-copies" class="kiosk-input w-full" value="1" min="1" max="10">
                 </div>
-                <div class="mb-6">
-                    <label class="block text-base font-medium mb-3">Format papier</label>
-                    <select id="paper-size" class="admin-input kiosk-input">
+                <div>
+                    <label class="block text-white mb-2 text-sm">Format papier</label>
+                    <select id="paper-size" class="kiosk-input w-full">
                         <option value="4x6">4x6 pouces</option>
                         <option value="5x7">5x7 pouces</option>
                         <option value="6x8">6x8 pouces</option>
@@ -811,41 +253,48 @@
                         <option value="letter">Letter</option>
                     </select>
                 </div>
-                <button id="start-print" class="admin-login-btn kiosk-submit-btn">Imprimer</button>
-                <div id="print-status" class="admin-status hidden"></div>
+                <button id="start-print" class="kiosk-action-btn primary w-full">Imprimer</button>
+                <div id="print-status" class="hidden text-center p-3 rounded-lg"></div>
             </div>
         </div>
     </div>
 
-    <!-- Modal email -->
-    <div id="email-modal" class="admin-modal kiosk-modal hidden">
-        <div class="admin-modal-content kiosk-modal-content">
-            <div class="admin-modal-header">
-                <h3 class="text-2xl font-bold">Envoi par email</h3>
-                <button id="close-email" class="close-btn">&times;</button>
+    <!-- Modal d'email -->
+    <div id="email-modal" class="kiosk-modal hidden">
+        <div class="kiosk-modal-content">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xl font-bold text-white">Envoi par email</h3>
+                <button id="close-email"
+                    class="text-2xl text-white hover:text-gray-300 transition-colors">&times;</button>
             </div>
-            <div class="admin-modal-body">
-                <div class="mb-6">
-                    <label class="block text-base font-medium mb-3">Votre nom (optionnel)</label>
-                    <input type="text" id="user-name" class="admin-input kiosk-input" placeholder="Votre nom">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-white mb-2 text-sm">Votre nom (optionnel)</label>
+                    <input type="text" id="user-name" class="kiosk-input w-full" placeholder="Votre nom">
                 </div>
-                <div class="mb-6">
-                    <label class="block text-base font-medium mb-3">Adresse email</label>
-                    <input type="email" id="user-email" class="admin-input kiosk-input" placeholder="votre@email.com"
+                <div>
+                    <label class="block text-white mb-2 text-sm">Adresse email</label>
+                    <input type="email" id="user-email" class="kiosk-input w-full" placeholder="votre@email.com"
                         required>
                 </div>
-                <div class="mb-6">
-                    <div class="flex items-center">
-                        <input type="checkbox" id="gdpr-consent" class="mr-3 scale-125">
-                        <label for="gdpr-consent" class="text-base text-slate-300">
-                            J'accepte que mes données soient utilisées pour l'envoi de cette photo
-                        </label>
-                    </div>
-                    <div id="gdpr-text" class="text-sm text-slate-400 mt-3 hidden"></div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="gdpr-consent" class="mr-3 scale-110">
+                    <label for="gdpr-consent" class="text-white text-sm">
+                        J'accepte que mes données soient utilisées pour l'envoi de cette photo
+                    </label>
                 </div>
-                <button id="send-email" class="admin-login-btn kiosk-submit-btn">Envoyer</button>
-                <div id="email-status" class="admin-status hidden"></div>
+                <button id="send-email" class="kiosk-action-btn primary w-full">Envoyer</button>
+                <div id="email-status" class="hidden text-center p-3 rounded-lg"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Overlay de chargement -->
+    <div id="loading-overlay"
+        class="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 hidden items-center justify-center">
+        <div class="text-center">
+            <div class="loading-spinner mx-auto mb-3"></div>
+            <p id="loading-text" class="text-white text-lg">Chargement...</p>
         </div>
     </div>
 
@@ -865,277 +314,627 @@
     <script src="/static/js/print-email.js"></script>
 
     <script>
-        // Appliquer la configuration au chargement de la page
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('🚀 DOM chargé - Initialisation des événements...');
+        // Configuration de l'application
+        const PhotoboothConfig = {
+            companyName: 'Photo Studio Pro',
+            eventType: 'Vos moments précieux',
+            countdownDuration: 3,
+            photoQuality: 0.9,
+            customLogo: null,
+            maxPhotos: 100,
+            stats: {
+                photos: 0,
+                downloads: 0,
+                prints: 0,
+                emails: 0
+            },
+            sounds: {
+                countdown: true,
+                capture: true,
+                success: true
+            }
+        };
 
-            // Initialiser l'interface avec la configuration
-            if (typeof updateInterfaceWithConfig === 'function') {
-                updateInterfaceWithConfig();
+        // Gestionnaire principal de l'application
+        class PhotoboothApp {
+            constructor() {
+                this.currentPhoto = null;
+                this.cameraStream = null;
+                this.isCapturing = false;
+                this.particlesInterval = null;
+                this.init();
             }
 
-            // Gestion du bouton admin
-            const adminButton = document.getElementById('admin-button');
-            console.log('🔍 Bouton admin trouvé:', adminButton);
+            init() {
+                console.log('🚀 Initialisation de Photo Studio Pro...');
+                this.setupEventListeners();
+                this.loadConfiguration();
+                this.createParticles();
+                this.updateStats();
+            }
 
-            if (adminButton) {
-                console.log('✅ Ajout de l\'événement click au bouton admin');
-                adminButton.addEventListener('click', function () {
-                    console.log('🎯 Clic sur le bouton admin détecté !');
-                    const adminModal = document.getElementById('admin-modal');
-                    if (adminModal) {
-                        console.log('✅ Modal admin trouvé, ouverture...');
-                        adminModal.classList.remove('hidden');
+            setupEventListeners() {
+                // Bouton principal
+                document.getElementById('start-button').addEventListener('click', () => {
+                    this.startCapture();
+                });
+
+                // Boutons de contrôle
+                document.getElementById('cancel-capture').addEventListener('click', () => {
+                    this.cancelCapture();
+                });
+
+                document.getElementById('retake-photo').addEventListener('click', () => {
+                    this.retakePhoto();
+                });
+
+                // Boutons d'action
+                document.getElementById('new-photo').addEventListener('click', () => {
+                    this.newPhoto();
+                });
+
+                document.getElementById('download-photo').addEventListener('click', () => {
+                    this.downloadPhoto();
+                });
+
+                document.getElementById('print-photo').addEventListener('click', () => {
+                    this.showPrintModal();
+                });
+
+                document.getElementById('email-photo').addEventListener('click', () => {
+                    this.showEmailModal();
+                });
+
+                // Administration
+                document.getElementById('admin-button').addEventListener('click', () => {
+                    this.showAdminModal();
+                });
+
+                // Modals
+                this.setupModalHandlers();
+            }
+
+            setupModalHandlers() {
+                // Administration
+                document.getElementById('close-admin').addEventListener('click', () => {
+                    document.getElementById('admin-modal').classList.add('hidden');
+                });
+
+                document.getElementById('admin-login').addEventListener('click', () => {
+                    this.handleAdminLogin();
+                });
+
+                // Impression
+                document.getElementById('close-print').addEventListener('click', () => {
+                    document.getElementById('print-modal').classList.add('hidden');
+                });
+
+                document.getElementById('start-print').addEventListener('click', () => {
+                    this.handlePrint();
+                });
+
+                // Email
+                document.getElementById('close-email').addEventListener('click', () => {
+                    document.getElementById('email-modal').classList.add('hidden');
+                });
+
+                document.getElementById('send-email').addEventListener('click', () => {
+                    this.handleEmailSend();
+                });
+            }
+
+            async startCapture() {
+                if (this.isCapturing) return;
+
+                try {
+                    this.showLoading('Initialisation de la caméra...');
+                    await this.initCamera();
+                    this.hideLoading();
+                    this.showCaptureInterface();
+                    this.startCountdown();
+                } catch (error) {
+                    this.hideLoading();
+                    this.showError('Impossible d\'accéder à la caméra');
+                }
+            }
+
+            async initCamera() {
+                const constraints = {
+                    video: {
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 },
+                        facingMode: 'user'
+                    }
+                };
+
+                this.cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                const video = document.getElementById('camera-video');
+                video.srcObject = this.cameraStream;
+
+                return new Promise((resolve) => {
+                    video.onloadedmetadata = () => {
+                        video.play();
+                        resolve();
+                    };
+                });
+            }
+
+            showCaptureInterface() {
+                const mainInterface = document.getElementById('main-interface');
+                const captureInterface = document.getElementById('capture-interface');
+
+                if (mainInterface && captureInterface) {
+                    mainInterface.classList.add('hidden');
+                    captureInterface.classList.remove('hidden');
+                }
+            }
+
+            startCountdown() {
+                let count = PhotoboothConfig.countdownDuration;
+                const countdownElement = document.getElementById('countdown-number');
+                this.isCapturing = true;
+
+                const interval = setInterval(() => {
+                    if (count > 0) {
+                        countdownElement.textContent = count;
+                        // Son du compte à rebours
+                        if (PhotoboothConfig.sounds.countdown) {
+                            this.playSound('beep');
+                        }
                     } else {
-                        console.error('❌ Modal admin non trouvé !');
+                        clearInterval(interval);
+                        countdownElement.textContent = '📸';
+                        this.capturePhoto();
                     }
-                });
-            } else {
-                console.error('❌ Bouton admin non trouvé !');
+                }, 1000);
             }
 
-            // Gestion de la fermeture du modal admin
-            const closeAdminButton = document.getElementById('close-admin');
-            if (closeAdminButton) {
-                closeAdminButton.addEventListener('click', function () {
-                    const adminModal = document.getElementById('admin-modal');
-                    if (adminModal) {
-                        adminModal.classList.add('hidden');
-                    }
-                });
+            capturePhoto() {
+                const video = document.getElementById('camera-video');
+                const canvas = document.getElementById('capture-canvas');
+                const ctx = canvas.getContext('2d');
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                ctx.drawImage(video, 0, 0);
+
+                // Appliquer des effets si nécessaire
+                this.applyPhotoEffects(ctx, canvas);
+
+                this.currentPhoto = canvas.toDataURL('image/jpeg', PhotoboothConfig.photoQuality);
+
+                // Son de capture
+                if (PhotoboothConfig.sounds.capture) {
+                    this.playSound('shutter');
+                }
+
+                // Flash effect
+                this.showFlashEffect();
+
+                // Arrêter la caméra
+                this.stopCamera();
+
+                // Afficher le résultat
+                setTimeout(() => {
+                    this.showResult();
+                }, 1000);
+
+                // Mettre à jour les statistiques
+                PhotoboothConfig.stats.photos++;
+                this.updateStats();
+                this.updatePhotoCounter();
+
+                this.showSuccess('Photo capturée avec succès !');
             }
 
-            // Gestion de la connexion admin
-            const adminLoginButton = document.getElementById('admin-login');
-            if (adminLoginButton) {
-                adminLoginButton.addEventListener('click', function () {
-                    const username = document.getElementById('admin-username').value;
-                    const password = document.getElementById('admin-password').value;
-                    const adminStatus = document.getElementById('admin-status');
+            // Méthode pour appliquer des effets aux photos
+            applyPhotoEffects(ctx, canvas) {
+                // Effet de contraste léger
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
 
-                    if (username && password) {
-                        // Ici vous pouvez ajouter la logique de connexion admin
-                        adminStatus.textContent = 'Connexion en cours...';
-                        adminStatus.className = 'admin-status';
-                        adminStatus.classList.remove('hidden');
+                for (let i = 0; i < data.length; i += 4) {
+                    // Améliorer le contraste
+                    data[i] = Math.min(255, Math.max(0, (data[i] - 128) * 1.1 + 128));     // Rouge
+                    data[i + 1] = Math.min(255, Math.max(0, (data[i + 1] - 128) * 1.1 + 128)); // Vert
+                    data[i + 2] = Math.min(255, Math.max(0, (data[i + 2] - 128) * 1.1 + 128)); // Bleu
+                }
 
-                        // Simulation de connexion (remplacer par votre logique réelle)
+                ctx.putImageData(imageData, 0, 0);
+            }
+
+            // Méthode pour jouer des sons
+            playSound(type) {
+                // Simulation de sons (à remplacer par de vrais fichiers audio)
+                console.log(`🔊 Son joué: ${type}`);
+            }
+
+            // Méthode pour afficher l'effet de flash
+            showFlashEffect() {
+                const flash = document.createElement('div');
+                flash.className = 'fixed inset-0 bg-white opacity-80 z-50 pointer-events-none';
+                flash.style.animation = 'flashEffect 0.3s ease-out';
+                document.body.appendChild(flash);
+
+                setTimeout(() => {
+                    document.body.removeChild(flash);
+                }, 300);
+            }
+
+            // Méthode pour arrêter la caméra
+            stopCamera() {
+                if (this.cameraStream) {
+                    this.cameraStream.getTracks().forEach(track => track.stop());
+                    this.cameraStream = null;
+                }
+            }
+
+            // Méthode pour afficher le résultat
+            showResult() {
+                const mainInterface = document.getElementById('main-interface');
+                const captureInterface = document.getElementById('capture-interface');
+                const resultInterface = document.getElementById('result-interface');
+
+                if (mainInterface && captureInterface && resultInterface) {
+                    mainInterface.classList.add('hidden');
+                    captureInterface.classList.add('hidden');
+                    resultInterface.classList.remove('hidden');
+
+                    // Afficher la photo capturée
+                    const resultImage = document.getElementById('result-image');
+                    if (resultImage && this.currentPhoto) {
+                        resultImage.src = this.currentPhoto;
+                    }
+                }
+            }
+
+            // Méthode pour afficher le modal d'administration
+            showAdminModal() {
+                const adminModal = document.getElementById('admin-modal');
+                if (adminModal) {
+                    adminModal.classList.remove('hidden');
+                }
+            }
+
+            // Méthode pour gérer la connexion admin
+            handleAdminLogin() {
+                const username = document.getElementById('admin-username').value;
+                const password = document.getElementById('admin-password').value;
+                const adminStatus = document.getElementById('admin-status');
+
+                if (username && password) {
+                    adminStatus.textContent = 'Connexion en cours...';
+                    adminStatus.className = 'bg-blue-500 text-white';
+                    adminStatus.classList.remove('hidden');
+
+                    // Simulation de connexion
+                    setTimeout(() => {
+                        if (username === 'admin' && password === 'admin') {
+                            adminStatus.textContent = 'Connexion réussie !';
+                            adminStatus.className = 'bg-green-500 text-white';
+                        } else {
+                            adminStatus.textContent = 'Identifiants incorrects';
+                            adminStatus.className = 'bg-red-500 text-white';
+                        }
+                    }, 1000);
+                } else {
+                    adminStatus.textContent = 'Veuillez remplir tous les champs';
+                    adminStatus.className = 'bg-red-500 text-white';
+                    adminStatus.classList.remove('hidden');
+                }
+            }
+
+            showPrintModal() {
+                if (!this.currentPhoto) return;
+                document.getElementById('print-modal').classList.remove('hidden');
+            }
+
+            handlePrint() {
+                const copies = document.getElementById('print-copies').value;
+                const paperSize = document.getElementById('paper-size').value;
+
+                this.showLoading('Envoi à l\'imprimante...');
+
+                // Simulation d'impression
+                setTimeout(() => {
+                    this.hideLoading();
+                    document.getElementById('print-modal').classList.add('hidden');
+
+                    PhotoboothConfig.stats.prints += parseInt(copies);
+                    this.updateStats();
+
+                    this.showSuccess(`${copies} copie(s) envoyée(s) à l'imprimante !`);
+                }, 2000);
+            }
+
+            showEmailModal() {
+                if (!this.currentPhoto) return;
+                document.getElementById('email-modal').classList.remove('hidden');
+            }
+
+            handleEmailSend() {
+                const userEmail = document.getElementById('user-email').value;
+                const userName = document.getElementById('user-name').value;
+
+                if (!userEmail) {
+                    this.showError('Veuillez saisir une adresse email');
+                    return;
+                }
+
+                this.showLoading('Envoi de l\'email...');
+
+                // Simulation d'envoi d'email
+                setTimeout(() => {
+                    this.hideLoading();
+                    document.getElementById('email-modal').classList.add('hidden');
+
+                    PhotoboothConfig.stats.emails++;
+                    this.updateStats();
+
+                    this.showSuccess('Email envoyé avec succès !');
+                }, 2000);
+            }
+
+            loadConfiguration() {
+                // Charger depuis le stockage local si disponible
+                try {
+                    const saved = JSON.parse(localStorage.getItem('photobooth-config') || '{}');
+                    if (saved.companyName) PhotoboothConfig.companyName = saved.companyName;
+                    if (saved.eventType) PhotoboothConfig.eventType = saved.eventType;
+                    if (saved.countdownDuration) PhotoboothConfig.countdownDuration = saved.countdownDuration;
+                    if (saved.photoQuality) PhotoboothConfig.photoQuality = saved.photoQuality;
+                    if (saved.customLogo) PhotoboothConfig.customLogo = saved.customLogo;
+                    if (saved.stats) PhotoboothConfig.stats = saved.stats;
+
+                    // Mettre à jour l'interface
+                    document.getElementById('company-name').textContent = PhotoboothConfig.companyName;
+                    document.getElementById('event-type').textContent = PhotoboothConfig.eventType;
+                } catch (error) {
+                    console.warn('Impossible de charger la configuration sauvegardée');
+                }
+            }
+
+            updateStats() {
+                // Sauvegarder les stats
+                try {
+                    const config = {
+                        companyName: PhotoboothConfig.companyName,
+                        eventType: PhotoboothConfig.eventType,
+                        countdownDuration: PhotoboothConfig.countdownDuration,
+                        photoQuality: PhotoboothConfig.photoQuality,
+                        customLogo: PhotoboothConfig.customLogo,
+                        stats: PhotoboothConfig.stats
+                    };
+                    localStorage.setItem('photobooth-config', JSON.stringify(config));
+                } catch (error) {
+                    console.warn('Impossible de sauvegarder les statistiques');
+                }
+            }
+
+            updatePhotoCounter() {
+                const photoCount = PhotoboothConfig.stats.photos;
+                const maxPhotos = PhotoboothConfig.maxPhotos;
+
+                document.getElementById('photo-count').textContent = photoCount;
+
+                const progress = Math.min((photoCount / maxPhotos) * 100, 100);
+                document.getElementById('photo-progress').style.width = progress + '%';
+
+                // Changer la couleur de la barre de progression
+                const progressBar = document.getElementById('photo-progress');
+                if (progress >= 100) {
+                    progressBar.style.background = 'linear-gradient(90deg, #10b981, #059669)';
+                } else if (progress >= 75) {
+                    progressBar.style.background = 'linear-gradient(90deg, #f59e0b, #d97706)';
+                }
+            }
+
+            createParticles() {
+                const container = document.getElementById('particles-container');
+
+                // Créer des particules flottantes
+                this.particlesInterval = setInterval(() => {
+                    if (Math.random() < 0.3) { // 30% de chance de créer une particule
+                        const particle = document.createElement('div');
+                        particle.className = 'particle';
+                        particle.style.left = Math.random() * window.innerWidth + 'px';
+                        particle.style.animationDelay = Math.random() * 2 + 's';
+
+                        // Couleurs aléatoires
+                        const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b'];
+                        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+                        container.appendChild(particle);
+
+                        // Supprimer la particule après l'animation
                         setTimeout(() => {
-                            if (username === 'admin' && password === 'admin') {
-                                adminStatus.textContent = 'Connexion réussie !';
-                                adminStatus.className = 'admin-status success';
-
-                                // Afficher la configuration
-                                const adminConfig = document.getElementById('admin-config');
-                                if (adminConfig) {
-                                    adminConfig.classList.remove('hidden');
-
-                                    // Charger la configuration actuelle
-                                    const companyNameInput = document.getElementById('company-name-input');
-                                    const eventTypeInput = document.getElementById('event-type-input');
-                                    const companyNameDisplay = document.getElementById('company-name');
-                                    const eventTypeDisplay = document.getElementById('event-type');
-
-                                    if (companyNameInput && companyNameDisplay) {
-                                        companyNameInput.value = companyNameDisplay.textContent;
-                                    }
-                                    if (eventTypeInput && eventTypeDisplay) {
-                                        eventTypeInput.value = eventTypeDisplay.textContent;
-                                    }
-                                }
-                            } else {
-                                adminStatus.textContent = 'Identifiants incorrects';
-                                adminStatus.className = 'admin-status error';
+                            if (particle.parentNode) {
+                                container.removeChild(particle);
                             }
-                        }, 1000);
-                    } else {
-                        adminStatus.textContent = 'Veuillez remplir tous les champs';
-                        adminStatus.className = 'admin-status error';
-                        adminStatus.classList.remove('hidden');
+                        }, 6000);
                     }
-                });
+                }, 1000);
             }
 
-            // Gestion de la sauvegarde de la configuration
-            const saveConfigButton = document.getElementById('save-config');
-            if (saveConfigButton) {
-                saveConfigButton.addEventListener('click', function () {
-                    const companyNameInput = document.getElementById('company-name-input');
-                    const eventTypeInput = document.getElementById('event-type-input');
-                    const configStatus = document.getElementById('config-status');
+            showLoading(text = 'Chargement...') {
+                const overlay = document.getElementById('loading-overlay');
+                const textElement = document.getElementById('loading-text');
+                textElement.textContent = text;
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
+            }
 
-                    if (companyNameInput && eventTypeInput) {
-                        const companyName = companyNameInput.value.trim();
-                        const eventType = eventTypeInput.value.trim();
+            hideLoading() {
+                const overlay = document.getElementById('loading-overlay');
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+            }
 
-                        if (companyName && eventType) {
-                            // Mettre à jour l'affichage
-                            const companyNameDisplay = document.getElementById('company-name');
-                            const eventTypeDisplay = document.getElementById('event-type');
+            showSuccess(message) {
+                this.showNotification(message, 'success');
+            }
 
-                            if (companyNameDisplay) {
-                                companyNameDisplay.textContent = companyName;
-                            }
-                            if (eventTypeDisplay) {
-                                eventTypeDisplay.textContent = eventType;
-                            }
+            showError(message) {
+                this.showNotification(message, 'error');
+            }
 
-                            // Sauvegarder en localStorage (ou envoyer au serveur)
-                            localStorage.setItem('photobooth-company-name', companyName);
-                            localStorage.setItem('photobooth-event-type', eventType);
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `fixed top-8 right-8 p-6 rounded-2xl shadow-2xl z-50 transform translate-x-full transition-transform duration-500 backdrop-blur-lg border-2`;
 
-                            // Afficher le statut de succès
-                            configStatus.textContent = 'Configuration sauvegardée !';
-                            configStatus.className = 'admin-status success';
-                            configStatus.classList.remove('hidden');
+                switch (type) {
+                    case 'success':
+                        notification.classList.add('bg-green-500/20', 'border-green-400', 'text-green-400');
+                        notification.innerHTML = `<div class="flex items-center gap-3"><span class="text-xl">✅</span><span>${message}</span></div>`;
+                        break;
+                    case 'error':
+                        notification.classList.add('bg-red-500/20', 'border-red-400', 'text-red-400');
+                        notification.innerHTML = `<div class="flex items-center gap-3"><span class="text-xl">❌</span><span>${message}</span></div>`;
+                        break;
+                    default:
+                        notification.classList.add('bg-blue-500/20', 'border-blue-400', 'text-blue-400');
+                        notification.innerHTML = `<div class="flex items-center gap-3"><span class="text-xl">ℹ️</span><span>${message}</span></div>`;
+                }
 
-                            // Masquer le statut après 3 secondes
-                            setTimeout(() => {
-                                configStatus.classList.add('hidden');
-                            }, 3000);
-                        } else {
-                            configStatus.textContent = 'Veuillez remplir tous les champs';
-                            configStatus.className = 'admin-status error';
-                            configStatus.classList.remove('hidden');
+                document.body.appendChild(notification);
+
+                // Animer l'entrée
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(0)';
+                }, 100);
+
+                // Supprimer après 4 secondes
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            document.body.removeChild(notification);
                         }
-                    }
-                });
+                    }, 500);
+                }, 4000);
             }
 
-            // Gestion des boutons d'action des photos
-            const newPhotoButton = document.getElementById('new-photo');
-            if (newPhotoButton) {
-                newPhotoButton.addEventListener('click', function () {
-                    // Revenir à l'interface principale
-                    const mainInterface = document.getElementById('main-interface');
-                    const resultInterface = document.getElementById('result-interface');
-
-                    if (mainInterface && resultInterface) {
-                        resultInterface.classList.add('hidden');
-                        mainInterface.classList.remove('hidden');
-                    }
-                });
-            }
-
-            const downloadPhotoButton = document.getElementById('download-photo');
-            if (downloadPhotoButton) {
-                downloadPhotoButton.addEventListener('click', function () {
-                    if (window.photoboothApp && window.photoboothApp.photoManager) {
-                        const currentPhoto = window.photoboothApp.photoManager.getCurrentPhoto();
-                        if (currentPhoto) {
-                            window.photoboothApp.photoManager.downloadPhoto(currentPhoto);
-                        }
-                    }
-                });
-            }
-
-            const printPhotoButton = document.getElementById('print-photo');
-            if (printPhotoButton) {
-                printPhotoButton.addEventListener('click', function () {
-                    const printModal = document.getElementById('print-modal');
-                    if (printModal) {
-                        printModal.classList.remove('hidden');
-                    }
-                });
-            }
-
-            const emailPhotoButton = document.getElementById('email-photo');
-            if (emailPhotoButton) {
-                emailPhotoButton.addEventListener('click', function () {
-                    const emailModal = document.getElementById('email-modal');
-                    if (emailModal) {
-                        emailModal.classList.remove('hidden');
-                    }
-                });
-            }
-
-            // Gestion des fermetures des modals
-            const closePrintButton = document.getElementById('close-print');
-            if (closePrintButton) {
-                closePrintButton.addEventListener('click', function () {
-                    const printModal = document.getElementById('print-modal');
-                    if (printModal) {
-                        printModal.classList.add('hidden');
-                    }
-                });
-            }
-
-            const closeEmailButton = document.getElementById('close-email');
-            if (closeEmailButton) {
-                closeEmailButton.addEventListener('click', function () {
-                    const emailModal = document.getElementById('email-modal');
-                    if (emailModal) {
-                        emailModal.classList.add('hidden');
-                    }
-                });
-            }
-
-            // Mettre à jour le statut de la caméra
-            function updateCameraStatus() {
+            // Mise à jour périodique des statuts
+            updateSystemStatus() {
+                // Simuler l'état de la caméra
                 const cameraStatus = document.getElementById('camera-status');
-                if (cameraStatus) {
-                    if (window.photoboothApp && window.photoboothApp.cameraManager) {
-                        const isActive = window.photoboothApp.cameraManager.isCameraActive();
-                        if (isActive) {
-                            cameraStatus.className = 'kiosk-status bg-green-500';
-                            cameraStatus.querySelector('.status-text').textContent = '📹 Caméra Active';
-                        } else {
-                            cameraStatus.className = 'kiosk-status bg-red-500';
-                            cameraStatus.querySelector('.status-text').textContent = '📹 Caméra Inactive';
-                        }
-                    }
+                const printerStatus = document.getElementById('printer-status');
+
+                // Logique pour vérifier les états réels des périphériques
+                // Pour la démo, on simule des états aléatoires
+                if (Math.random() > 0.9) {
+                    cameraStatus.className = 'kiosk-status inactive';
+                    cameraStatus.querySelector('.status-text').textContent = '📹 Caméra Déconnectée';
+                } else {
+                    cameraStatus.className = 'kiosk-status active';
+                    cameraStatus.querySelector('.status-text').textContent = '📹 Caméra Active';
+                }
+
+                if (Math.random() > 0.95) {
+                    printerStatus.className = 'kiosk-status inactive';
+                    printerStatus.querySelector('.status-text').textContent = '🖨️ Imprimante Hors Ligne';
+                } else {
+                    printerStatus.className = 'kiosk-status active';
+                    printerStatus.querySelector('.status-text').textContent = '🖨️ Imprimante Prête';
                 }
             }
 
-            // Mettre à jour le compteur de photos
-            function updatePhotoCounter() {
-                if (window.photoboothApp && window.photoboothApp.photoManager) {
-                    const photoCount = window.photoboothApp.photoManager.getPhotoCount();
-                    const photoCountElement = document.getElementById('photo-count');
-                    const photoProgressElement = document.getElementById('photo-progress');
-
-                    if (photoCountElement) {
-                        photoCountElement.textContent = photoCount;
-                    }
-
-                    if (photoProgressElement) {
-                        const progress = Math.min((photoCount / 100) * 100, 100);
-                        photoProgressElement.style.width = progress + '%';
-                    }
-                }
+            // Méthodes manquantes pour la navigation
+            cancelCapture() {
+                this.stopCamera();
+                this.isCapturing = false;
+                document.getElementById('capture-interface').classList.add('hidden');
+                document.getElementById('main-interface').classList.remove('hidden');
             }
 
-            // Mettre à jour les statuts toutes les 2 secondes
+            retakePhoto() {
+                this.startCapture();
+            }
+
+            newPhoto() {
+                document.getElementById('result-interface').classList.add('hidden');
+                document.getElementById('main-interface').classList.remove('hidden');
+                this.currentPhoto = null;
+            }
+
+            downloadPhoto() {
+                if (!this.currentPhoto) return;
+
+                const link = document.createElement('a');
+                link.download = `photo-studio-${Date.now()}.jpg`;
+                link.href = this.currentPhoto;
+                link.click();
+
+                PhotoboothConfig.stats.downloads++;
+                this.updateStats();
+                this.updatePhotoCounter();
+            }
+        }
+
+        // Initialisation de l'application au chargement de la page
+        let photoboothApp;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🎯 DOM chargé - Initialisation de Photo Studio Pro...');
+            photoboothApp = new PhotoboothApp();
+
+            // Mise à jour périodique des statuts système
             setInterval(() => {
-                updateCameraStatus();
-                updatePhotoCounter();
-            }, 2000);
+                photoboothApp.updateSystemStatus();
+            }, 10000);
 
-            // Mise à jour initiale
-            updateCameraStatus();
-            updatePhotoCounter();
+            // Gestion des erreurs globales
+            window.addEventListener('error', (e) => {
+                console.error('❌ Erreur globale:', e.error);
+                photoboothApp.showError('Une erreur est survenue');
+            });
 
-            // Charger la configuration au démarrage
-            function loadConfiguration() {
-                const companyName = localStorage.getItem('photobooth-company-name');
-                const eventType = localStorage.getItem('photobooth-event-type');
-
-                if (companyName) {
-                    const companyNameDisplay = document.getElementById('company-name');
-                    if (companyNameDisplay) {
-                        companyNameDisplay.textContent = companyName;
-                    }
+            // Gestion des touches de raccourci
+            document.addEventListener('keydown', (e) => {
+                switch (e.key) {
+                    case ' ': // Espace pour commencer
+                        e.preventDefault();
+                        if (!photoboothApp.isCapturing) {
+                            photoboothApp.startCapture();
+                        }
+                        break;
+                    case 'Escape': // Échap pour annuler
+                        if (photoboothApp.isCapturing) {
+                            photoboothApp.cancelCapture();
+                        }
+                        break;
+                    case 'Enter': // Entrée pour nouvelle photo
+                        if (photoboothApp.currentPhoto) {
+                            photoboothApp.newPhoto();
+                        }
+                        break;
                 }
+            });
 
-                if (eventType) {
-                    const eventTypeDisplay = document.getElementById('event-type');
-                    if (eventTypeDisplay) {
-                        eventTypeDisplay.textContent = eventType;
-                    }
+            console.log('✅ Photo Studio Pro initialisé avec succès !');
+        });
+
+        // Nettoyage lors de la fermeture
+        window.addEventListener('beforeunload', () => {
+            if (photoboothApp) {
+                photoboothApp.stopCamera();
+                if (photoboothApp.particlesInterval) {
+                    clearInterval(photoboothApp.particlesInterval);
                 }
             }
+        });
 
-            loadConfiguration();
+        // Support des appareils mobiles
+        if ('ontouchstart' in window) {
+            document.body.classList.add('touch-device');
+        }
+
+        // Gestion de l'orientation pour les appareils mobiles
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                location.reload();
+            }, 500);
         });
     </script>
 </body>

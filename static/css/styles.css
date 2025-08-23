@@ -1,0 +1,845 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700;900&display=swap');
+
+/* Variables CSS pour une maintenance facile */
+:root {
+    --primary-color: #3b82f6;
+    --primary-dark: #1d4ed8;
+    --primary-darker: #1e40af;
+    --secondary-color: #8b5cf6;
+    --accent-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --text-primary: #ffffff;
+    --text-secondary: #e2e8f0;
+    --text-muted: #94a3b8;
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #1a1a2e;
+    --bg-tertiary: #16213e;
+    --bg-accent: #0f3460;
+    --border-color: rgba(148, 163, 184, 0.3);
+    --shadow-primary: rgba(59, 130, 246, 0.4);
+    --shadow-secondary: rgba(0, 0, 0, 0.4);
+    --border-radius-sm: 12px;
+    --border-radius-md: 16px;
+    --border-radius-lg: 20px;
+    --border-radius-xl: 24px;
+    --border-radius-2xl: 32px;
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    --spacing-2xl: 4rem;
+    --spacing-3xl: 6rem;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    --font-size-5xl: 3rem;
+    --font-size-6xl: 3.75rem;
+    --font-size-7xl: 4.5rem;
+    --font-size-8xl: 6rem;
+    --font-size-9xl: 8rem;
+}
+
+* {
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+}
+
+.title-font {
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Background amélioré avec animations */
+.kiosk-bg {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-accent) 75%, var(--bg-secondary) 100%);
+    position: relative;
+    overflow: hidden;
+    animation: backgroundShift 20s ease-in-out infinite;
+}
+
+@keyframes backgroundShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.kiosk-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 60% 90%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
+    animation: floatingLights 15s ease-in-out infinite;
+}
+
+@keyframes floatingLights {
+    0%, 100% {
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Grille dynamique */
+.grid-pattern {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    animation: gridFloat 8s ease-in-out infinite;
+}
+
+@keyframes gridFloat {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(10px, 10px);
+    }
+}
+
+/* Bouton principal avec effets avancés - TAILLES OPTIMISÉES */
+.kiosk-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 50%, var(--primary-darker) 100%);
+    border: none;
+    border-radius: var(--border-radius-2xl);
+    padding: var(--spacing-xl) var(--spacing-3xl);
+    font-size: var(--font-size-2xl);
+    font-weight: 800;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        0 20px 40px var(--shadow-primary),
+        0 0 0 3px rgba(255, 255, 255, 0.1),
+        inset 0 2px 0 rgba(255, 255, 255, 0.2);
+    min-height: 100px;
+    min-width: 320px;
+    backdrop-filter: blur(10px);
+}
+
+.kiosk-btn:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow:
+        0 30px 60px var(--shadow-primary),
+        0 0 0 4px rgba(255, 255, 255, 0.2),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3),
+        0 0 40px var(--shadow-primary);
+    background: linear-gradient(135deg, #4f46e5 0%, #3730a3 50%, #312e81 100%);
+}
+
+.kiosk-btn:active {
+    transform: translateY(-3px) scale(1.01);
+    transition: all 0.1s;
+}
+
+/* Effet de brillance sur le bouton */
+.kiosk-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 1s ease;
+}
+
+.kiosk-btn:hover::before {
+    left: 100%;
+}
+
+/* Animation pulse améliorée */
+@keyframes advancedPulse {
+    0%, 100% {
+        box-shadow:
+            0 20px 40px var(--shadow-primary),
+            0 0 0 3px rgba(255, 255, 255, 0.1),
+            inset 0 2px 0 rgba(255, 255, 255, 0.2);
+    }
+    50% {
+        box-shadow:
+            0 25px 50px var(--shadow-primary),
+            0 0 0 5px rgba(255, 255, 255, 0.15),
+            inset 0 2px 0 rgba(255, 255, 255, 0.25),
+            0 0 30px var(--shadow-primary);
+    }
+}
+
+.kiosk-btn {
+    animation: advancedPulse 3s ease-in-out infinite;
+}
+
+/* Titre avec effet holographique - TAILLES OPTIMISÉES */
+.kiosk-title {
+    background: linear-gradient(135deg,
+        #ffffff 0%,
+        #e0e7ff 20%,
+        #c7d2fe 40%,
+        #a5b4fc 60%,
+        #8b5cf6 80%,
+        #7c3aed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
+    animation: titleGlow 4s ease-in-out infinite;
+    font-size: var(--font-size-7xl);
+}
+
+@keyframes titleGlow {
+    0%, 100% {
+        filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 12px 24px rgba(147, 51, 234, 0.4));
+    }
+}
+
+/* Statuts avec animations - TAILLES OPTIMISÉES */
+.kiosk-status {
+    background: rgba(15, 23, 42, 0.9);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    backdrop-filter: blur(30px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+    min-height: 70px;
+    min-width: 180px;
+    position: relative;
+    overflow: hidden;
+}
+
+.kiosk-status:hover {
+    background: rgba(15, 23, 42, 0.95);
+    border-color: rgba(148, 163, 184, 0.6);
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 16px 32px var(--shadow-secondary);
+}
+
+.kiosk-status::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    animation: advancedStatusPulse 2s infinite;
+}
+
+.kiosk-status.active::before {
+    background: var(--accent-color);
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.8);
+}
+
+.kiosk-status.inactive::before {
+    background: var(--danger-color);
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.8);
+}
+
+@keyframes advancedStatusPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.2);
+    }
+}
+
+/* Compteur de photos amélioré - TAILLES OPTIMISÉES */
+.kiosk-counter {
+    background: rgba(15, 23, 42, 0.9);
+    border: 3px solid rgba(59, 130, 246, 0.4);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-xl);
+    backdrop-filter: blur(30px);
+    transition: all 0.5s ease;
+    min-height: 140px;
+    min-width: 200px;
+    position: relative;
+    overflow: hidden;
+}
+
+.kiosk-counter::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 2s ease;
+}
+
+.kiosk-counter:hover {
+    transform: scale(1.03);
+    border-color: rgba(59, 130, 246, 0.8);
+    background: rgba(15, 23, 42, 0.95);
+    box-shadow: 0 20px 40px var(--shadow-secondary);
+}
+
+.kiosk-counter:hover::before {
+    left: 100%;
+}
+
+/* Interface de capture */
+.kiosk-capture {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    border: 4px solid rgba(59, 130, 246, 0.3);
+    border-radius: var(--border-radius-2xl);
+    padding: var(--spacing-2xl);
+    backdrop-filter: blur(20px);
+}
+
+/* Compteur dégressif avec effet dramatique - TAILLES OPTIMISÉES */
+.kiosk-countdown {
+    font-size: var(--font-size-8xl);
+    font-weight: 900;
+    color: var(--text-primary);
+    text-shadow:
+        0 0 24px rgba(0, 0, 0, 0.9),
+        0 0 48px rgba(0, 0, 0, 0.7),
+        0 0 72px rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5);
+    padding: var(--spacing-xl) var(--spacing-2xl);
+    border-radius: var(--border-radius-xl);
+    backdrop-filter: blur(15px);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    animation: dramaticCountdown 1s ease-in-out infinite;
+    z-index: 10;
+}
+
+@keyframes dramaticCountdown {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+    }
+    50% {
+        transform: scale(1.15);
+        box-shadow: 0 0 80px rgba(255, 255, 255, 0.6);
+    }
+}
+
+/* Bouton admin avec effets premium - TAILLES OPTIMISÉES */
+.kiosk-admin-btn {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+    border: 2px solid rgba(148, 163, 184, 0.4);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    color: rgba(248, 250, 252, 0.95);
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    backdrop-filter: blur(30px);
+    min-width: 180px;
+    min-height: 70px;
+    position: relative;
+    overflow: hidden;
+}
+
+.kiosk-admin-btn:hover {
+    background: linear-gradient(135deg, #334155 0%, #475569 50%, #64748b 100%);
+    border-color: rgba(59, 130, 246, 0.6);
+    color: white;
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 16px 32px var(--shadow-secondary);
+}
+
+/* Boutons d'action avec effets premium - TAILLES OPTIMISÉES */
+.kiosk-action-btn {
+    background: linear-gradient(135deg, #475569 0%, #64748b 50%, #94a3b8 100%);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-xl) var(--spacing-2xl);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: var(--font-size-lg);
+    backdrop-filter: blur(20px);
+    min-width: 220px;
+    min-height: 80px;
+    position: relative;
+    overflow: hidden;
+}
+
+.kiosk-action-btn:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 20px 40px var(--shadow-secondary);
+}
+
+.kiosk-action-btn.primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 50%, var(--primary-darker) 100%);
+}
+
+.kiosk-action-btn.success {
+    background: linear-gradient(135deg, var(--accent-color) 0%, #059669 50%, #047857 100%);
+}
+
+.kiosk-action-btn.warning {
+    background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 50%, #b45309 100%);
+}
+
+.kiosk-action-btn.info {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 50%, #0e7490 100%);
+}
+
+/* Modals améliorées */
+.kiosk-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(50px);
+    animation: modalFadeIn 0.3s ease-out;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kiosk-modal.hidden {
+    display: none !important;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.kiosk-modal-content {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+    border: 3px solid rgba(148, 163, 184, 0.4);
+    border-radius: var(--border-radius-2xl);
+    box-shadow:
+        0 32px 64px var(--shadow-secondary),
+        0 0 0 3px rgba(255, 255, 255, 0.1);
+    padding: var(--spacing-2xl);
+    max-width: 600px;
+    width: 90%;
+    animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 10000;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Inputs améliorés - TAILLES OPTIMISÉES */
+.kiosk-input {
+    background: rgba(15, 23, 42, 0.9);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    color: white;
+    transition: all 0.4s ease;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    font-size: var(--font-size-lg);
+    min-height: 60px;
+    backdrop-filter: blur(10px);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.kiosk-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+    background: rgba(15, 23, 42, 0.95);
+    transform: scale(1.01);
+}
+
+/* Animations d'entrée */
+.kiosk-fade-in {
+    animation: advancedFadeIn 1s ease-out;
+}
+
+.kiosk-fade-in-delay {
+    animation: advancedFadeIn 1s ease-out 0.2s both;
+}
+
+.kiosk-fade-in-delay-2 {
+    animation: advancedFadeIn 1s ease-out 0.4s both;
+}
+
+.kiosk-fade-in-delay-3 {
+    animation: advancedFadeIn 1s ease-out 0.6s both;
+}
+
+@keyframes advancedFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Effet glassmorphism premium */
+.kiosk-glass {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(40px);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    box-shadow:
+        0 20px 40px var(--shadow-secondary),
+        inset 0 2px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Décorations flottantes - TAILLES OPTIMISÉES */
+.floating-element {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.float-1 {
+    animation: float1 8s ease-in-out infinite;
+}
+
+.float-2 {
+    animation: float2 10s ease-in-out infinite 2s;
+}
+
+.float-3 {
+    animation: float3 12s ease-in-out infinite 4s;
+}
+
+@keyframes float1 {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-16px) rotate(180deg);
+    }
+}
+
+@keyframes float2 {
+    0%, 100% {
+        transform: translateX(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateX(-24px) rotate(-90deg);
+    }
+}
+
+@keyframes float3 {
+    0%, 100% {
+        transform: translate(0px, 0px) rotate(0deg);
+    }
+    33% {
+        transform: translate(12px, -12px) rotate(120deg);
+    }
+    66% {
+        transform: translate(-12px, 12px) rotate(240deg);
+    }
+}
+
+/* Progress bar améliorée */
+.progress-bar {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), #ec4899, var(--warning-color));
+    background-size: 200% 100%;
+    animation: progressGlow 3s ease-in-out infinite;
+    border-radius: 10px;
+    box-shadow: 0 0 16px var(--shadow-primary);
+}
+
+@keyframes progressGlow {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Responsive amélioré avec tailles optimisées */
+@media (max-width: 768px) {
+    .kiosk-btn {
+        padding: var(--spacing-lg) var(--spacing-2xl);
+        font-size: var(--font-size-xl);
+        min-height: 80px;
+        min-width: 280px;
+    }
+
+    .kiosk-countdown {
+        font-size: var(--font-size-6xl);
+    }
+
+    .kiosk-title {
+        font-size: var(--font-size-5xl);
+    }
+
+    .kiosk-status {
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: var(--font-size-base);
+        min-height: 60px;
+        min-width: 160px;
+    }
+
+    .kiosk-counter {
+        padding: var(--spacing-lg);
+        min-height: 120px;
+        min-width: 180px;
+    }
+
+    .kiosk-action-btn {
+        padding: var(--spacing-lg) var(--spacing-xl);
+        font-size: var(--font-size-base);
+        min-width: 200px;
+        min-height: 70px;
+    }
+}
+
+@media (max-width: 480px) {
+    .kiosk-btn {
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: var(--font-size-lg);
+        min-height: 70px;
+        min-width: 240px;
+    }
+
+    .kiosk-title {
+        font-size: var(--font-size-4xl);
+    }
+
+    .kiosk-countdown {
+        font-size: var(--font-size-5xl);
+    }
+}
+
+/* Effet de particules */
+.particle {
+    position: fixed;
+    pointer-events: none;
+    width: 3px;
+    height: 3px;
+    background: rgba(59, 130, 246, 0.6);
+    border-radius: 50%;
+    animation: particleFloat 6s linear infinite;
+}
+
+@keyframes particleFloat {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-10vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Loading spinner */
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Styles pour les statuts des modals */
+#admin-status,
+#print-status,
+#email-status {
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    font-weight: 600;
+    text-align: center;
+    margin-top: var(--spacing-md);
+}
+
+#admin-status.bg-blue-500,
+#print-status.bg-blue-500,
+#email-status.bg-blue-500 {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+#admin-status.bg-green-500,
+#print-status.bg-green-500,
+#email-status.bg-green-500 {
+    background-color: var(--accent-color) !important;
+    color: white !important;
+}
+
+#admin-status.bg-red-500,
+#print-status.bg-red-500,
+#email-status.bg-red-500 {
+    background-color: var(--danger-color) !important;
+    color: white !important;
+}
+
+/* Animation pour l'effet de flash */
+@keyframes flashEffect {
+    0% {
+        opacity: 0.8;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Styles pour les éléments de texte avec tailles optimisées */
+.text-company-name {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+}
+
+.text-event-type {
+    font-size: var(--font-size-xl);
+    font-weight: 300;
+}
+
+.text-photo-count {
+    font-size: var(--font-size-6xl);
+    font-weight: 800;
+}
+
+.text-logo {
+    font-size: var(--font-size-8xl);
+}
+
+.text-subtitle {
+    font-size: var(--font-size-2xl);
+    font-weight: 300;
+}
+
+/* Styles pour les boutons de navigation */
+.nav-button {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px var(--shadow-secondary);
+}
+
+/* Styles pour les cartes d'information */
+.info-card {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: rgba(148, 163, 184, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Styles pour les icônes */
+.icon-large {
+    font-size: var(--font-size-4xl);
+}
+
+.icon-medium {
+    font-size: var(--font-size-2xl);
+}
+
+.icon-small {
+    font-size: var(--font-size-lg);
+}
+
+/* Styles pour les séparateurs */
+.separator {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    margin: var(--spacing-md) 0;
+    border-radius: 1px;
+}
+
+/* Styles pour les notifications */
+.notification {
+    position: fixed;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 10001;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
