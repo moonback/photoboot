@@ -18,22 +18,52 @@ class PrintEmailManager {
 
     initializeEventListeners() {
         // Boutons d'impression et email
-        document.getElementById('print-photo').addEventListener('click', () => this.showPrintModal());
-        document.getElementById('email-photo').addEventListener('click', () => this.showEmailModal());
+        const printPhotoBtn = document.getElementById('print-photo');
+        const emailPhotoBtn = document.getElementById('email-photo');
+        
+        if (printPhotoBtn) {
+            printPhotoBtn.addEventListener('click', () => this.showPrintModal());
+        }
+        
+        if (emailPhotoBtn) {
+            emailPhotoBtn.addEventListener('click', () => this.showEmailModal());
+        }
 
         // Fermeture des modales
-        document.getElementById('close-print').addEventListener('click', () => this.hidePrintModal());
-        document.getElementById('close-email').addEventListener('click', () => this.hideEmailModal());
+        const closePrintBtn = document.getElementById('close-print');
+        const closeEmailBtn = document.getElementById('close-email');
+        
+        if (closePrintBtn) {
+            closePrintBtn.addEventListener('click', () => this.hidePrintModal());
+        }
+        
+        if (closeEmailBtn) {
+            closeEmailBtn.addEventListener('click', () => this.hideEmailModal());
+        }
 
         // Actions
-        document.getElementById('start-print').addEventListener('click', () => this.startPrint());
-        document.getElementById('send-email').addEventListener('click', () => this.sendEmail());
+        const startPrintBtn = document.getElementById('start-print');
+        const sendEmailBtn = document.getElementById('send-email');
+        
+        if (startPrintBtn) {
+            startPrintBtn.addEventListener('click', () => this.startPrint());
+        }
+        
+        if (sendEmailBtn) {
+            sendEmailBtn.addEventListener('click', () => this.sendEmail());
+        }
 
         // Validation email
-        document.getElementById('user-email').addEventListener('blur', (e) => this.validateEmail(e.target.value));
+        const userEmailInput = document.getElementById('user-email');
+        if (userEmailInput) {
+            userEmailInput.addEventListener('blur', (e) => this.validateEmail(e.target.value));
+        }
 
         // Consentement RGPD
-        document.getElementById('gdpr-consent').addEventListener('change', (e) => this.handleGdprConsent(e.target.checked));
+        const gdprConsentCheckbox = document.getElementById('gdpr-consent');
+        if (gdprConsentCheckbox) {
+            gdprConsentCheckbox.addEventListener('change', (e) => this.handleGdprConsent(e.target.checked));
+        }
     }
 
     setCurrentPhoto(photoPath, photoUrl) {
@@ -53,20 +83,27 @@ class PrintEmailManager {
                 this.updatePrinterSelect();
             }
         } catch (error) {
-            console.error('Erreur lors du chargement des imprimantes:', error);
+            console.log('API imprimantes non disponible, utilisation des valeurs par défaut');
+            // Utiliser des valeurs par défaut si l'API n'est pas disponible
+            this.printers = [
+                { name: 'Imprimante par défaut', platform: 'Local' }
+            ];
+            this.updatePrinterSelect();
         }
     }
 
     updatePrinterSelect() {
         const select = document.getElementById('printer-select');
-        select.innerHTML = '<option value="">Imprimante par défaut</option>';
+        if (select) {
+            select.innerHTML = '<option value="">Imprimante par défaut</option>';
 
-        this.printers.forEach(printer => {
-            const option = document.createElement('option');
-            option.value = printer.name;
-            option.textContent = `${printer.name} (${printer.platform})`;
-            select.appendChild(option);
-        });
+            this.printers.forEach(printer => {
+                const option = document.createElement('option');
+                option.value = printer.name;
+                option.textContent = `${printer.name} (${printer.platform})`;
+                select.appendChild(option);
+            });
+        }
     }
 
     async loadGdprConsent() {
@@ -77,15 +114,22 @@ class PrintEmailManager {
                 this.updateGdprText();
             }
         } catch (error) {
-            console.error('Erreur lors du chargement du consentement RGPD:', error);
+            console.log('API RGPD non disponible, utilisation des valeurs par défaut');
+            // Utiliser des valeurs par défaut si l'API n'est pas disponible
+            this.gdprConsent = {
+                required: true,
+                consent_text: "J'accepte que mes données soient utilisées pour l'envoi de cette photo"
+            };
         }
     }
 
     updateGdprText() {
         if (this.gdprConsent) {
             const gdprText = document.getElementById('gdpr-text');
-            gdprText.textContent = this.gdprConsent.consent_text;
-            gdprText.classList.remove('hidden');
+            if (gdprText) {
+                gdprText.textContent = this.gdprConsent.consent_text;
+                gdprText.classList.remove('hidden');
+            }
         }
     }
 
@@ -95,12 +139,18 @@ class PrintEmailManager {
             return;
         }
 
-        document.getElementById('print-modal').classList.remove('hidden');
-        this.hideStatus('print');
+        const printModal = document.getElementById('print-modal');
+        if (printModal) {
+            printModal.classList.remove('hidden');
+            this.hideStatus('print');
+        }
     }
 
     hidePrintModal() {
-        document.getElementById('print-modal').classList.add('hidden');
+        const printModal = document.getElementById('print-modal');
+        if (printModal) {
+            printModal.classList.add('hidden');
+        }
     }
 
     showEmailModal() {
@@ -109,17 +159,27 @@ class PrintEmailManager {
             return;
         }
 
-        document.getElementById('email-modal').classList.remove('hidden');
-        this.hideStatus('email');
+        const emailModal = document.getElementById('email-modal');
+        if (emailModal) {
+            emailModal.classList.remove('hidden');
+            this.hideStatus('email');
 
-        // Réinitialiser le formulaire
-        document.getElementById('user-name').value = '';
-        document.getElementById('user-email').value = '';
-        document.getElementById('gdpr-consent').checked = false;
+            // Réinitialiser le formulaire
+            const userNameInput = document.getElementById('user-name');
+            const userEmailInput = document.getElementById('user-email');
+            const gdprConsentCheckbox = document.getElementById('gdpr-consent');
+            
+            if (userNameInput) userNameInput.value = '';
+            if (userEmailInput) userEmailInput.value = '';
+            if (gdprConsentCheckbox) gdprConsentCheckbox.checked = false;
+        }
     }
 
     hideEmailModal() {
-        document.getElementById('email-modal').classList.add('hidden');
+        const emailModal = document.getElementById('email-modal');
+        if (emailModal) {
+            emailModal.classList.add('hidden');
+        }
     }
 
     async startPrint() {
@@ -128,9 +188,17 @@ class PrintEmailManager {
             return;
         }
 
-        const printerName = document.getElementById('printer-select').value;
-        const copies = parseInt(document.getElementById('print-copies').value);
-        const paperSize = document.getElementById('paper-size').value;
+        const printerSelect = document.getElementById('printer-select');
+        const printCopies = document.getElementById('print-copies');
+        const paperSize = document.getElementById('paper-size');
+        
+        if (!printerSelect || !printCopies || !paperSize) {
+            this.showStatus('print', 'Erreur: Éléments d\'impression manquants', 'error');
+            return;
+        }
+
+        const printerName = printerSelect.value;
+        const copies = parseInt(printCopies.value);
 
         if (copies < 1 || copies > 10) {
             this.showStatus('print', 'Nombre de copies invalide', 'error');
@@ -172,9 +240,18 @@ class PrintEmailManager {
             return;
         }
 
-        const userName = document.getElementById('user-name').value.trim();
-        const userEmail = document.getElementById('user-email').value.trim();
-        const consentGiven = document.getElementById('gdpr-consent').checked;
+        const userNameInput = document.getElementById('user-name');
+        const userEmailInput = document.getElementById('user-email');
+        const gdprConsentCheckbox = document.getElementById('gdpr-consent');
+        
+        if (!userNameInput || !userEmailInput || !gdprConsentCheckbox) {
+            this.showStatus('email', 'Erreur: Éléments du formulaire manquants', 'error');
+            return;
+        }
+
+        const userName = userNameInput.value.trim();
+        const userEmail = userEmailInput.value.trim();
+        const consentGiven = gdprConsentCheckbox.checked;
 
         if (!userEmail) {
             this.showStatus('email', 'Adresse email requise', 'error');
@@ -232,22 +309,32 @@ class PrintEmailManager {
 
     handleGdprConsent(checked) {
         if (checked && this.gdprConsent?.required) {
-            document.getElementById('gdpr-text').classList.remove('hidden');
+            const gdprText = document.getElementById('gdpr-text');
+            if (gdprText) {
+                gdprText.classList.remove('hidden');
+            }
         } else {
-            document.getElementById('gdpr-text').classList.add('hidden');
+            const gdprText = document.getElementById('gdpr-text');
+            if (gdprText) {
+                gdprText.classList.add('hidden');
+            }
         }
     }
 
     showStatus(type, message, status = 'info') {
         const statusElement = document.getElementById(`${type}-status`);
-        statusElement.textContent = message;
-        statusElement.className = `admin-status ${status}`;
-        statusElement.classList.remove('hidden');
+        if (statusElement) {
+            statusElement.textContent = message;
+            statusElement.className = `admin-status ${status}`;
+            statusElement.classList.remove('hidden');
+        }
     }
 
     hideStatus(type) {
         const statusElement = document.getElementById(`${type}-status`);
-        statusElement.classList.add('hidden');
+        if (statusElement) {
+            statusElement.classList.add('hidden');
+        }
     }
 
     showError(message) {
